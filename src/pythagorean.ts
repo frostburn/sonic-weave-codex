@@ -76,7 +76,13 @@ export type AugmentedQuality = 'd' | 'dim' | 'a' | 'Â' | 'aug' | 'Aug';
  * Interval quality, possibly fractional.
  */
 export type IntervalQuality = {
+  /**
+   * Optional fractional modifier applied to the quality inflection.
+   */
   fraction: VulgarFraction;
+  /**
+   * Base quality name or augmentation/diminution marker.
+   */
   quality:
     | 'm'
     | 'min'
@@ -93,9 +99,21 @@ export type IntervalQuality = {
  * Relative Pythagorean interval.
  */
 export type Pythagorean = {
+  /**
+   * AST discriminator for relative Pythagorean intervals.
+   */
   type: 'Pythagorean';
+  /**
+   * Primary interval quality.
+   */
   quality: IntervalQuality;
+  /**
+   * Additional repeated augmentations or diminutions applied beyond `quality`.
+   */
   augmentations?: AugmentedQuality[];
+  /**
+   * Relative degree information including inversion and octave displacement.
+   */
   degree: Degree;
 };
 
@@ -219,7 +237,7 @@ export type AbsolutePitch = {
    */
   accidentals: SplitAccidental[];
   /**
-   * Register number relative to octave 4.
+   * Register number, e.g. 4. The sounding frequency depends on the active evaluation context; by convention the default reference is A4 = 440 Hz.
    */
   octave: number;
 };
