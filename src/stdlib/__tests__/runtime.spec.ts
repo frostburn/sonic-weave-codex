@@ -55,8 +55,6 @@ describe('ternaryBroadcast', () => {
         ['1', '2'],
         (left, middle, right) => `${left}${middle}${right}`,
       ),
-    ).toThrow(
-      'Unable to broadcast arrays together with lengths 1, 2 and 2.',
-    );
+    ).toThrow('Unable to broadcast arrays together with lengths 1, 2 and 2.');
   });
 });
