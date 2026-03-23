@@ -8,6 +8,13 @@ import {ValBasisElement} from '../expression';
 import {StatementVisitor} from './statement';
 
 const CTE_EQUAVE_WEIGHT = 5000;
+/**
+ * Optimization heuristic used when deriving a temperament from commas or vals.
+ *
+ * - `TE` keeps the default Tenney-Euclidean weighting.
+ * - `POTE` uses pure equaves while keeping Tenney-style weights for the rest.
+ * - `CTE` emphasizes the equave heavily in order to approximate constrained TE.
+ */
 export type OptimizationScheme = 'TE' | 'POTE' | 'CTE';
 
 /**
@@ -15,6 +22,7 @@ export type OptimizationScheme = 'TE' | 'POTE' | 'CTE';
  * @param input User input in a context that expects a chord.
  * @param includePrelude Whether or not to include the extended standard library. Passing in `false` results in a faster start-up time.
  * @returns An array of parsed {@link Interval} instances.
+ * @throws An error if any item in the input cannot be evaluated as an interval.
  */
 export function parseChord(input: string, includePrelude = true): Interval[] {
   const parts: string[] = parse(input) as any;
@@ -27,6 +35,7 @@ export function parseChord(input: string, includePrelude = true): Interval[] {
  * Parse a string like "2.3.5" to a subgroup basis. A single number is interpreted as a prime limit.
  * @param input User input in a context that expects a subgroup basis.
  * @returns A {@link ValBasis} instance.
+ * @throws An error if the subgroup syntax is invalid or the prime limit is unsupported.
  */
 export function parseBasis(input: string): ValBasis {
   input = input.trim();
@@ -79,6 +88,7 @@ export function parseBasis(input: string): ValBasis {
  * @param basis Dot-separated subgroup basis or the prime limit parsed by {@link parseBasis}.
  * @param includePrelude Whether or not to include the extended standard library. Passing in `false` results in a faster start-up time.
  * @returns An array of number arrays representing vals in the subgroup basis.
+ * @throws An error if any entry cannot be interpreted as a val in the requested basis.
  */
 export function parseVals(
   input: string,
@@ -131,6 +141,7 @@ export function parseVals(
  * @param optimizationScheme Optimization scheme to use.
  * @param subgroupWeights Additional importance weights to apply on top of Tenney weights.
  * @returns A {@link Temperament} instance tempering out the given commas.
+ * @throws An error if a comma cannot be parsed or if real-valued commas are supplied.
  */
 export function temperamentFromCommas(
   commaInput: string,
@@ -168,6 +179,7 @@ export function temperamentFromCommas(
  * @param optimizationScheme Optimization scheme to use.
  * @param subgroupWeights Additional importance weights to apply on top of Tenney weights.
  * @returns A {@link Temperament} instance tempering out the given commas and featuring exactly two independent generators.
+ * @throws An error if the commas are invalid or no suitable rank-2 subgroup can be inferred.
  */
 export function rank2FromCommas(
   commaInput: string,
@@ -253,6 +265,7 @@ export function rank2FromCommas(
  * @param optimizationScheme Optimization scheme to use.
  * @param subgroupWeights Additional importance weights to apply on top of Tenney weights.
  * @returns A {@link Temperament} instance representing the temperament supported by all vals provided.
+ * @throws An error if the vals or subgroup cannot be parsed.
  */
 export function temperamentFromVals(
   valsInput: string,
