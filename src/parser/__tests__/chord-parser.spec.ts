@@ -89,6 +89,10 @@ describe('Subgroup basis parser', () => {
     expect(elevenLimit?.toString()).toBe('@2.3.5.7.11');
   });
 
+  it('rejects malformed prime-limit strings with trailing junk', () => {
+    expect(() => parseBasis('11foo')).toThrow();
+  });
+
   it('rejects composite limits', () => {
     expect(() => parseBasis('10')).toThrow();
   });

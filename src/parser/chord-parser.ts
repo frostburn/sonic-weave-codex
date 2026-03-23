@@ -75,6 +75,9 @@ export function parseBasis(input: string): ValBasis {
       basis,
     }) as ValBasis;
   }
+  if (!/^\d+$/.test(input)) {
+    throw new Error(`Unrecognized prime limit ${input}.`);
+  }
   const prime = parseInt(input, 10);
   if (PRIMES.includes(prime)) {
     return new ValBasis(PRIMES.indexOf(prime) + 1);
