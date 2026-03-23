@@ -6,7 +6,13 @@ import {TimeMonzo} from './monzo';
  * Result from {@link subtensions} consisting of a relative interval and all of the spans it subtends (a set of 0-indexed interval classes).
  */
 export type Subtender = {
+  /**
+   * The relative interval shared by the listed subtensions.
+   */
   monzo: TimeMonzo;
+  /**
+   * All 0-indexed interval classes in the scale that realize `monzo`.
+   */
   subtensions: Set<number>;
 };
 
