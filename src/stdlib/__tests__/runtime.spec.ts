@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {ternaryBroadcast} from '../stdlib/runtime';
+import {ternaryBroadcast} from '../runtime';
 
 type BroadcastContext = {
   gasSpent: number;
