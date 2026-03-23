@@ -21,8 +21,8 @@ export type OptimizationScheme = 'TE' | 'POTE' | 'CTE';
  * Parse a list of intervals separated by '|', '&', ':', ';', ',' or whitespace.
  * @param input User input in a context that expects a chord.
  * @param includePrelude Whether or not to include the extended standard library. Passing in `false` results in a faster start-up time.
- * @returns An array of parsed {@link Interval} instances.
- * @throws An error if any item in the input cannot be evaluated as an interval.
+ * @returns An array containing only the parsed {@link Interval} instances, skipping non-interval values produced while evaluating the chord expression.
+ * @throws An error if the chord syntax is invalid or evaluation fails before interval results can be collected.
  */
 export function parseChord(input: string, includePrelude = true): Interval[] {
   const parts: string[] = parse(input) as any;

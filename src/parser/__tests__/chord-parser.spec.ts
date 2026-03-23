@@ -49,6 +49,11 @@ describe('Chord input parser', () => {
     ]);
   });
 
+  it('ignores non-interval values returned while parsing a chord', () => {
+    const result = parseChord('1, "hello", 2');
+    expect(result.map(i => i.toString())).toEqual(['1', '2']);
+  });
+
   it('has the Konami code', () => {
     const start = parseChord('^^vv/\\/\\[2, 1>');
     const value = start[0].value as TimeMonzo;
