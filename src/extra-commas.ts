@@ -102,6 +102,9 @@ for (const [key, value] of Object.entries(SYNTONIC_RASTMIC)) {
 }
 
 export function getSyntonicRastmic(id: number) {
+  if (!Number.isSafeInteger(id) || id < 0) {
+    return UNITY;
+  }
   let result = UNITY;
   for (const key of id.toString()) {
     if (SYNTONIC_RASTMIC_MAP.has(key)) {
@@ -123,6 +126,9 @@ for (const [key, value] of Object.entries(LUMIS_COMMAS)) {
 }
 
 export function getLumisComma(id: number) {
+  if (!Number.isSafeInteger(id) || id < 0) {
+    return UNITY;
+  }
   let result = UNITY;
   for (const key of id.toString()) {
     if (LUMIS_MAP.has(key)) {
