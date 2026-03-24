@@ -1221,9 +1221,22 @@ FractionLiteral
 UpsAndDowns 'up-and-down'
   = ('^' / 'v' / '/' / '\\')* {
     const t = text();
+    let ups = 0;
+    let lifts = 0;
+    for (const c of t) {
+      if (c === '^') {
+        ++ups;
+      } else if (c === 'v') {
+        --ups;
+      } else if (c === '/') {
+        ++lifts;
+      } else {
+        --lifts;
+      }
+    }
     return {
-      ups: (t.match(/\^/g) ?? []).length - (t.match(/v/g) ?? []).length,
-      lifts: (t.match(/\//g) ?? []).length - (t.match(/\\/g) ?? []).length,
+      ups,
+      lifts,
     };
   }
 
