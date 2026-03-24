@@ -134,8 +134,9 @@ export function rotate(str: string, offset: number): string {
   if (!str.length) {
     return str;
   }
-  const i = mmod(offset, str.length);
-  return str.slice(i) + str.slice(0, i);
+  return [...Array(str.length).keys()]
+    .map(i => str[mmod(i + offset, str.length)])
+    .join('');
 }
 
 /* Elements in the resulting StepVector have the order given by `orderedLetterList`.
@@ -155,27 +156,28 @@ export function getStepVector(
   if (word.length === 0) {
     // Always return the zero vector if `word` is empty
     return zeroVector();
-  }
-  const quotient = Math.floor(intervalClass / word.length);
-  if (intervalClass % word.length === 0) {
-    if (!quotient) {
-      return zeroVector();
-    }
-    return scalarMult(stepSignature(word), quotient);
+  } else if (intervalClass % word.length === 0) {
+    return scalarMult(
+      stepSignature(word),
+      Math.floor(intervalClass / word.length),
+    );
   } else {
     // Initialize `result` to a prefix with `intervalClass / word.length` letters
-    const result = quotient ? scalarMult(stepSignature(word), quotient) : {};
+    const result = scalarMult(
+      stepSignature(word),
+      Math.floor(intervalClass / word.length),
+    );
+    const slice = String(word).slice(0, intervalClass % word.length);
+    // Do it the intuitive way:
     // For each letter encountered, if `letter` is not already in `result`,
     // then create a new entry for key `letter`; otherwise increment existing value for `letter`.
-    const stop = intervalClass % word.length;
-    for (let i = 0; i < stop; ++i) {
-      const letter = word[i];
+    Array.from(slice).forEach(letter => {
       if (hasOwn(result, letter)) {
         result[letter]++;
       } else {
         result[letter] = 1;
       }
-    }
+    });
     return result;
   }
 }
@@ -190,14 +192,13 @@ export function stepSignature(word: string): StepVector {
     return zeroVector();
   }
   const result = zeroVector();
-  for (let i = 0; i < word.length; ++i) {
-    const letter = word[i];
+  Array.from(word).forEach(letter => {
     if (hasOwn(result, letter)) {
       result[letter]++;
     } else {
       result[letter] = 1;
     }
-  }
+  });
   return result;
 }
 
@@ -267,9 +268,8 @@ export function stepString(monzos: (TimeMonzo | TimeReal)[]) {
   }
   const orderedSteps = [...steps];
   orderedSteps.sort((a, b) => a.compare(b));
-  const uniqueSteps = [orderedSteps[0]];
-  for (let i = 1; i < orderedSteps.length; ++i) {
-    const step = orderedSteps[i];
+  const uniqueSteps = [orderedSteps.shift()!];
+  for (const step of orderedSteps) {
     if (!step.equals(uniqueSteps[uniqueSteps.length - 1])) {
       uniqueSteps.push(step);
     }
@@ -292,18 +292,12 @@ export function stepString(monzos: (TimeMonzo | TimeReal)[]) {
     letters.push(...NEGATIVE_STEP_LETTERS_BY_VARIETY[numNegative]);
   } else {
     // Too many steps, use fillers.
-    let fillerCount = 0;
     while (numNegative > 25) {
-      fillerCount++;
+      letters.push('¿');
       numNegative--;
     }
-    const greekLetters: string[] = [];
     for (let i = 0; i < numNegative; ++i) {
-      greekLetters.push(String.fromCharCode(945 + i));
-    }
-    letters.push(...greekLetters.reverse());
-    for (let i = 0; i < fillerCount; ++i) {
-      letters.push('¿');
+      letters.unshift(String.fromCharCode(945 + i));
     }
   }
 
@@ -339,7 +333,6 @@ export function stepString(monzos: (TimeMonzo | TimeReal)[]) {
     for (let i = 0; i < uniqueSteps.length; ++i) {
       if (step.strictEquals(uniqueSteps[i])) {
         result += letters[i];
-        break;
       }
     }
   }

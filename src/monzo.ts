@@ -1401,14 +1401,13 @@ export class TimeMonzo {
       return this.residual.clone();
     }
     let result = this.residual;
-    for (let i = 0; i < this.primeExponents.length; ++i) {
-      const component = this.primeExponents[i];
+    this.primeExponents.forEach((component, i) => {
       const factor = FRACTION_PRIMES[i].pow(component);
       if (factor === null) {
         throw new Error('Unable to convert irrational number to fraction.');
       }
       result = result.mul(factor);
-    }
+    });
     return result;
   }
 
@@ -1420,8 +1419,7 @@ export class TimeMonzo {
   toBigNumeratorDenominator() {
     let numerator = BigInt(this.residual.n * this.residual.s);
     let denominator = BigInt(this.residual.d);
-    for (let i = 0; i < this.primeExponents.length; ++i) {
-      const component = this.primeExponents[i];
+    this.primeExponents.forEach((component, i) => {
       if (component.d !== 1) {
         throw new Error('Unable to convert irrational number to fraction.');
       }
@@ -1434,7 +1432,7 @@ export class TimeMonzo {
       } else if (component.s < 0) {
         denominator *= BIG_INT_PRIMES[i] ** n;
       }
-    }
+    });
     // Validate the actual result.
     validateBigInt(numerator);
     validateBigInt(denominator);
@@ -1451,8 +1449,7 @@ export class TimeMonzo {
       throw new Error('Unable to convert fractional number to integer.');
     }
     let result = BigInt(this.residual.n * this.residual.s);
-    for (let i = 0; i < this.primeExponents.length; ++i) {
-      const component = this.primeExponents[i];
+    this.primeExponents.forEach((component, i) => {
       if (component.d !== 1) {
         throw new Error('Unable to convert irrational number to integer.');
       }
@@ -1464,7 +1461,7 @@ export class TimeMonzo {
         throw new Error('Integer overflow.');
       }
       result *= BIG_INT_PRIMES[i] ** n;
-    }
+    });
     validateBigInt(result);
     return result;
   }

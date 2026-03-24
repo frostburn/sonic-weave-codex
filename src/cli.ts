@@ -144,14 +144,13 @@ export function repl(start: (options?: string | ReplOptions) => REPLServer) {
         cb(null, null);
         return;
       }
-      const {body} = program;
-      for (let i = 0; i < body.length - 1; ++i) {
-        const interrupt = visitor.visit(body[i]);
+      for (const statement of program.body.slice(0, -1)) {
+        const interrupt = visitor.visit(statement);
         if (interrupt) {
           throw new Error('Illegal statement.');
         }
       }
-      const finalStatement = body[body.length - 1];
+      const finalStatement = program.body[program.body.length - 1];
       if (finalStatement.type === 'ExpressionStatement') {
         const subVisitor = visitor.createExpressionVisitor();
         const value = subVisitor.visit(finalStatement.expression);

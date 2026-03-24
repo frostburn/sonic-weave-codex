@@ -152,9 +152,8 @@ export function evaluateExpression(
 ): SonicWeaveValue {
   const visitor = getSourceVisitor(includePrelude, extraBuiltins);
   const program = parseAST(source);
-  const {body} = program;
-  for (let i = 0; i < body.length - 1; ++i) {
-    const interrupt = visitor.visit(body[i]);
+  for (const statement of program.body.slice(0, -1)) {
+    const interrupt = visitor.visit(statement);
     if (interrupt) {
       throw new Error(`Illegal ${interrupt.type}.`);
     }
@@ -164,7 +163,7 @@ export function evaluateExpression(
       'Deferred actions not allowed when evaluating expressions.',
     );
   }
-  const finalStatement = body[body.length - 1];
+  const finalStatement = program.body[program.body.length - 1];
   if (finalStatement.type !== 'ExpressionStatement') {
     throw new Error(`Expected expression. Got ${finalStatement.type}.`);
   }
@@ -243,9 +242,8 @@ export function createTag(
     }
     const program = parseAST(source);
     if (expression) {
-      const {body} = program;
-      for (let i = 0; i < body.length - 1; ++i) {
-        const interrupt = visitor.visit(body[i]);
+      for (const statement of program.body.slice(0, -1)) {
+        const interrupt = visitor.visit(statement);
         if (interrupt) {
           throw new Error(`Illegal ${interrupt.type}.`);
         }
@@ -255,7 +253,7 @@ export function createTag(
           'Deferred actions not allowed when evaluating tagged templates.',
         );
       }
-      const finalStatement = body[body.length - 1];
+      const finalStatement = program.body[program.body.length - 1];
       if (finalStatement.type !== 'ExpressionStatement') {
         throw new Error(`Expected expression. Got ${finalStatement.type}.`);
       }
