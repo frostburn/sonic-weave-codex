@@ -1,34 +1,35 @@
 import {
+  addNodes,
   IntervalLiteral,
   NedjiLiteral,
-  addNodes,
-  divNodes,
-  mulNodes,
-  projectNodes,
-  subNodes,
+  IntervalLiteralResolver,
   literalToString,
-  modNodes,
-  roundToNodes,
   validateNode,
-  negNode,
-  invertNode,
-  absNode,
-  lensAddNodes,
-  lensSubNodes,
-  pitchRoundToNodes,
-  powNodes,
-  ipowNodes,
-  logNodes,
   inferFJSFlavor,
   integerToVectorComponent,
   MonzoLiteral,
   literalToJSON,
   intervalLiteralFromJSON,
-  sqrtNode,
-  pitchAbsNode,
   ValBasisLiteral,
   CoIntervalLiteral,
   WartBasisElement,
+  lazyAbsNode,
+  lazyDivNodes,
+  lazyInvertNode,
+  lazyIPowNodes,
+  lazyLensAddNodes,
+  lazyLensSubNodes,
+  lazyLogNodes,
+  lazyModNodes,
+  lazyMulNodes,
+  lazyNegNode,
+  lazyPitchAbsNode,
+  lazyPitchRoundToNodes,
+  lazyPowNodes,
+  lazyProjectNodes,
+  lazyRoundToNodes,
+  lazySqrtNode,
+  subNodes,
 } from './expression';
 import {TimeMonzo, TimeReal, getNumberOfComponents, reviveMonzo} from './monzo';
 import {asAbsoluteFJS, asFJS} from './fjs';
@@ -127,6 +128,7 @@ function logLinMul(
   linear: Interval,
   node?: IntervalLiteral,
   zombie?: Interval,
+  nodeResolver?: IntervalLiteralResolver,
 ) {
   if (linear.steps) {
     throw new Error('Cannot multiply with a stepful scalar.');
@@ -146,6 +148,7 @@ function logLinMul(
       steps,
       node,
       zombie,
+      nodeResolver,
     );
   }
   const value = logarithmic.value.pow(linear.value);
@@ -154,8 +157,16 @@ function logLinMul(
     logarithmic.node?.type === 'AspiringFJS'
   ) {
     node = {type: 'AspiringFJS', flavor: ''};
+    nodeResolver = undefined;
   }
-  return new Interval(value, logarithmic.domain, steps, node, zombie);
+  return new Interval(
+    value,
+    logarithmic.domain,
+    steps,
+    node,
+    zombie,
+    nodeResolver,
+  );
 }
 
 /**
@@ -199,10 +210,27 @@ export class Interval {
   value: TimeMonzo | TimeReal;
   domain: IntervalDomain;
   steps: number;
-  node?: IntervalLiteral;
+  private node_?: IntervalLiteral;
+  private nodeResolver_?: () => IntervalLiteral | undefined;
   color?: Color;
   label: string;
   trackingIds: Set<number>;
+
+  get node() {
+    if (this.node_ === undefined && this.nodeResolver_) {
+      const node = this.nodeResolver_();
+      validateNode(node);
+      this.node_ = node;
+      this.nodeResolver_ = undefined;
+    }
+    return this.node_;
+  }
+
+  set node(value: IntervalLiteral | undefined) {
+    validateNode(value);
+    this.node_ = value;
+    this.nodeResolver_ = undefined;
+  }
 
   /**
    * Construct a musical interval.
@@ -218,12 +246,14 @@ export class Interval {
     steps = 0,
     node?: IntervalLiteral,
     convert?: Interval,
+    nodeResolver?: () => IntervalLiteral | undefined,
   ) {
     validateNode(node);
     this.value = value;
     this.domain = domain;
     this.steps = steps;
-    this.node = node;
+    this.node_ = node;
+    this.nodeResolver_ = nodeResolver;
     this.trackingIds = new Set();
     if (convert !== undefined) {
       this.color = convert.color;
@@ -390,22 +420,24 @@ export class Interval {
    * @returns Negative counterpart of this interval.
    */
   neg() {
-    const node = negNode(this.node);
+    const nodeResolver = lazyNegNode(this.node);
     if (this.domain === 'linear') {
       return new Interval(
         this.value.neg(),
         this.domain,
         this.steps, // Iffy, but not wrong.
-        node,
+        undefined,
         this,
+        nodeResolver,
       );
     }
     return new Interval(
       this.value.inverse(),
       this.domain,
       -this.steps,
-      node,
+      undefined,
       this,
+      nodeResolver,
     );
   }
 
@@ -414,14 +446,15 @@ export class Interval {
    * @returns Inverse of this interval.
    */
   inverse() {
-    const node = invertNode(this.node);
+    const nodeResolver = lazyInvertNode(this.node);
     if (this.domain === 'linear') {
       return new Interval(
         this.value.inverse(),
         this.domain,
         -this.steps,
-        node,
+        undefined,
         this,
+        nodeResolver,
       );
     }
     if (this.value instanceof TimeReal) {
@@ -443,11 +476,25 @@ export class Interval {
     if (this.steps) {
       throw new Error('Steps are ambiguous in abs.');
     }
-    const node = absNode(this.node);
+    const nodeResolver = lazyAbsNode(this.node);
     if (this.domain === 'linear') {
-      return new Interval(this.value.abs(), this.domain, 0, node, this);
+      return new Interval(
+        this.value.abs(),
+        this.domain,
+        0,
+        undefined,
+        this,
+        nodeResolver,
+      );
     }
-    return new Interval(this.value.pitchAbs(), this.domain, 0, node, this);
+    return new Interval(
+      this.value.pitchAbs(),
+      this.domain,
+      0,
+      undefined,
+      this,
+      nodeResolver,
+    );
   }
 
   /**
@@ -463,8 +510,14 @@ export class Interval {
     if (this.steps) {
       throw new Error('Steps are ambiguous in labs.');
     }
-    const node = pitchAbsNode(this.node);
-    return new Interval(this.value.pitchAbs(), this.domain, 0, node, this);
+    return new Interval(
+      this.value.pitchAbs(),
+      this.domain,
+      0,
+      undefined,
+      this,
+      lazyPitchAbsNode(this.node),
+    );
   }
 
   /**
@@ -475,13 +528,13 @@ export class Interval {
     if (this.steps % 2) {
       throw new Error('Cannot split steps using √.');
     }
-    const node = sqrtNode(this.node);
     return new Interval(
       this.value.sqrt(),
       this.domain,
       this.steps / 2,
-      node,
+      undefined,
       this,
+      lazySqrtNode(this.node),
     );
   }
 
@@ -495,16 +548,17 @@ export class Interval {
     if (steps.d !== 1) {
       throw new Error('Cannot create fractional steps.');
     }
-    let node: undefined | IntervalLiteral;
+    let nodeResolver: IntervalLiteralResolver | undefined;
     if (!steps.n) {
-      node = projectNodes(this.node, base.node);
+      nodeResolver = lazyProjectNodes(this.node, base.node);
     }
     return new Interval(
       this.value.project(base.value),
       'logarithmic',
       steps.valueOf(),
-      node,
+      undefined,
       infect(this, base),
+      nodeResolver,
     );
   }
 
@@ -520,21 +574,33 @@ export class Interval {
     if (this.domain === 'linear' && (this.steps || other.steps)) {
       throw new Error('Linear addition of steps is not allowed.');
     }
-    let node = addNodes(this.node, other.node);
+    const leftNode = this.node;
+    const rightNode = other.node;
+    let nodeResolver: IntervalLiteralResolver | undefined;
+    if (leftNode && rightNode) {
+      nodeResolver = () => {
+        const node = addNodes(leftNode, rightNode);
+        if (node) {
+          return node;
+        }
+        if (leftNode.type === rightNode.type) {
+          return intervalValueAs(value, leftNode, true);
+        }
+        return undefined;
+      };
+    }
     const value =
       this.domain === 'linear'
         ? this.value.add(other.value)
         : this.value.mul(other.value);
-    if (!node && this.node?.type === other.node?.type) {
-      node = intervalValueAs(value, this.node, true);
-    }
     const zombie = infect(this, other);
     return new Interval(
       value,
       this.domain,
       this.steps + other.steps,
-      node,
+      undefined,
       zombie,
+      nodeResolver,
     );
   }
 
@@ -550,21 +616,33 @@ export class Interval {
     if (this.domain === 'linear' && (this.steps || other.steps)) {
       throw new Error('Linear subtraction of steps is not allowed.');
     }
-    let node = subNodes(this.node, other.node);
+    const leftNode = this.node;
+    const rightNode = other.node;
+    let nodeResolver: IntervalLiteralResolver | undefined;
+    if (leftNode && rightNode) {
+      nodeResolver = () => {
+        const node = subNodes(leftNode, rightNode);
+        if (node) {
+          return node;
+        }
+        if (leftNode.type === rightNode.type) {
+          return intervalValueAs(value, leftNode, true);
+        }
+        return undefined;
+      };
+    }
     const value =
       this.domain === 'linear'
         ? this.value.sub(other.value)
         : this.value.div(other.value);
-    if (!node && this.node?.type === other.node?.type) {
-      node = intervalValueAs(value, this.node, true);
-    }
     const zombie = infect(this, other);
     return new Interval(
       value,
       this.domain,
       this.steps - other.steps,
-      node,
+      undefined,
       zombie,
+      nodeResolver,
     );
   }
 
@@ -592,15 +670,16 @@ export class Interval {
     if (this.steps || other.steps) {
       throw new Error('Steps not supported in harmonic addition.');
     }
-    const node = lensAddNodes(this.node, other.node);
+    const nodeResolver = lazyLensAddNodes(this.node, other.node);
     const zombie = infect(this, other);
     if (this.domain === 'linear') {
       return new Interval(
         this.value.lensAdd(other.value),
         this.domain,
         0,
-        node,
+        undefined,
         zombie,
+        nodeResolver,
       );
     }
     if (this.value instanceof TimeReal || other.value instanceof TimeReal) {
@@ -608,11 +687,25 @@ export class Interval {
     }
     const magnitude = this.value.dot(this.value);
     if (!magnitude.n) {
-      return new Interval(this.value.clone(), this.domain, 0, node, zombie);
+      return new Interval(
+        this.value.clone(),
+        this.domain,
+        0,
+        undefined,
+        zombie,
+        nodeResolver,
+      );
     }
     const otherMagnitude = other.value.dot(other.value);
     if (!otherMagnitude.n) {
-      return new Interval(other.value.clone(), this.domain, 0, node, zombie);
+      return new Interval(
+        other.value.clone(),
+        this.domain,
+        0,
+        undefined,
+        zombie,
+        nodeResolver,
+      );
     }
     const value = this.value
       .pow(magnitude.inverse())
@@ -621,7 +714,14 @@ export class Interval {
     if (value instanceof TimeReal) {
       throw new Error('Logarithmic lens addition failed.');
     }
-    return new Interval(value.geometricInverse(), this.domain, 0, node, zombie);
+    return new Interval(
+      value.geometricInverse(),
+      this.domain,
+      0,
+      undefined,
+      zombie,
+      nodeResolver,
+    );
   }
 
   /**
@@ -636,15 +736,16 @@ export class Interval {
     if (this.steps || other.steps) {
       throw new Error('Steps not supported in harmonic subtraction.');
     }
-    const node = lensSubNodes(this.node, other.node);
+    const nodeResolver = lazyLensSubNodes(this.node, other.node);
     const zombie = infect(this, other);
     if (this.domain === 'linear') {
       return new Interval(
         this.value.lensSub(other.value),
         this.domain,
         0,
-        node,
+        undefined,
         zombie,
+        nodeResolver,
       );
     }
     if (this.value instanceof TimeReal || other.value instanceof TimeReal) {
@@ -654,11 +755,25 @@ export class Interval {
     }
     const magnitude = this.value.dot(this.value);
     if (!magnitude.n) {
-      return new Interval(this.value.clone(), this.domain, 0, node, zombie);
+      return new Interval(
+        this.value.clone(),
+        this.domain,
+        0,
+        undefined,
+        zombie,
+        nodeResolver,
+      );
     }
     const otherMagnitude = other.value.dot(other.value);
     if (!otherMagnitude.n) {
-      return new Interval(other.value.clone(), this.domain, 0, node, zombie);
+      return new Interval(
+        other.value.clone(),
+        this.domain,
+        0,
+        undefined,
+        zombie,
+        nodeResolver,
+      );
     }
     const value = this.value
       .pow(magnitude.inverse())
@@ -666,7 +781,14 @@ export class Interval {
     if (value instanceof TimeReal) {
       throw new Error('Logarithmic lens subtraction failed.');
     }
-    return new Interval(value.geometricInverse(), this.domain, 0, node, zombie);
+    return new Interval(
+      value.geometricInverse(),
+      this.domain,
+      0,
+      undefined,
+      zombie,
+      nodeResolver,
+    );
   }
 
   /**
@@ -681,23 +803,25 @@ export class Interval {
     if (this.steps || other.steps) {
       throw new Error('Steps not supported in rounding.');
     }
-    const node = roundToNodes(this.node, other.node);
+    const nodeResolver = lazyRoundToNodes(this.node, other.node);
     const zombie = infect(this, other);
     if (this.domain === 'linear') {
       return new Interval(
         this.value.roundTo(other.value),
         this.domain,
         0,
-        node,
+        undefined,
         zombie,
+        nodeResolver,
       );
     }
     return new Interval(
       this.value.pitchRoundTo(other.value),
       this.domain,
       0,
-      node,
+      undefined,
       zombie,
+      nodeResolver,
     );
   }
 
@@ -714,23 +838,25 @@ export class Interval {
     if (this.steps || other.steps) {
       throw new Error('Steps not supported in modulo.');
     }
-    const node = modNodes(this.node, other.node);
+    const nodeResolver = lazyModNodes(this.node, other.node);
     const zombie = infect(this, other);
     if (this.domain === 'linear') {
       return new Interval(
         this.value.mmod(other.value, ceiling),
         this.domain,
         0,
-        node,
+        undefined,
         zombie,
+        nodeResolver,
       );
     }
     return new Interval(
       this.value.reduce(other.value, ceiling),
       this.domain,
       0,
-      node,
+      undefined,
       zombie,
+      nodeResolver,
     );
   }
 
@@ -751,13 +877,13 @@ export class Interval {
     if (!other.value.isScalar()) {
       throw new Error('Only scalar exponential rounding implemented.');
     }
-    const node = pitchRoundToNodes(this.node, other.node);
     return new Interval(
       this.value.pitchRoundTo(other.value),
       this.domain,
       0,
-      node,
+      undefined,
       infect(this, other),
+      lazyPitchRoundToNodes(this.node, other.node),
     );
   }
 
@@ -775,20 +901,21 @@ export class Interval {
     if (other.domain === 'cologarithmic') {
       return other.mul(this);
     }
-    const node = mulNodes(this.node, other.node);
+    const nodeResolver = lazyMulNodes(this.node, other.node);
     const zombie = infect(this, other);
     if (other.domain === 'logarithmic') {
-      return logLinMul(other, this, node, zombie);
+      return logLinMul(other, this, undefined, zombie, nodeResolver);
     }
     if (this.domain === 'logarithmic') {
-      return logLinMul(this, other, node, zombie);
+      return logLinMul(this, other, undefined, zombie, nodeResolver);
     }
     return new Interval(
       this.value.mul(other.value),
       this.domain,
       this.steps + other.steps,
-      node,
+      undefined,
       zombie,
+      nodeResolver,
     );
   }
 
@@ -799,7 +926,8 @@ export class Interval {
    * @returns The ratio of the intervals.
    */
   div(other: Interval) {
-    let node = divNodes(this.node, other.node);
+    let node: IntervalLiteral | undefined;
+    let nodeResolver = lazyDivNodes(this.node, other.node);
     const zombie = infect(this, other);
     if (other.domain === 'logarithmic') {
       if (this.domain !== 'logarithmic') {
@@ -807,7 +935,14 @@ export class Interval {
       }
       // Log throws an error if this won't work.
       const steps = this.steps / (other.steps || 1);
-      return new Interval(log(this, other), 'linear', steps, node, zombie);
+      return new Interval(
+        log(this, other),
+        'linear',
+        steps,
+        undefined,
+        zombie,
+        nodeResolver,
+      );
     }
     if (this.domain === 'logarithmic') {
       let steps = 0;
@@ -820,15 +955,24 @@ export class Interval {
       const value = this.value.pow(other.value.inverse());
       if (this.node?.type === 'FJS' || this.node?.type === 'AspiringFJS') {
         node = {type: 'AspiringFJS', flavor: ''};
+        nodeResolver = undefined;
       }
-      return new Interval(value, this.domain, steps, node, zombie);
+      return new Interval(
+        value,
+        this.domain,
+        steps,
+        node,
+        zombie,
+        nodeResolver,
+      );
     }
     return new Interval(
       this.value.div(other.value),
       this.domain,
       this.steps - other.steps,
-      node,
+      undefined,
       zombie,
+      nodeResolver,
     );
   }
 
@@ -897,7 +1041,7 @@ export class Interval {
     if (!other.value.isScalar() || other.steps) {
       throw new Error('Only scalar exponentiation implemented.');
     }
-    const node = powNodes(this.node, other.node);
+    const nodeResolver = lazyPowNodes(this.node, other.node);
     let steps = 0;
     if (this.steps) {
       steps = this.steps * other.valueOf();
@@ -909,8 +1053,9 @@ export class Interval {
       this.value.pow(other.value),
       this.domain,
       steps,
-      node,
+      undefined,
       infect(this, other),
+      nodeResolver,
     );
   }
 
@@ -928,7 +1073,7 @@ export class Interval {
     if (!other.value.isScalar() || other.steps) {
       throw new Error('Only scalar inverse exponentiation implemented.');
     }
-    const node = ipowNodes(this.node, other.node);
+    const nodeResolver = lazyIPowNodes(this.node, other.node);
     const exponent = other.value.inverse();
     let steps = 0;
     if (this.steps) {
@@ -941,8 +1086,9 @@ export class Interval {
       this.value.pow(exponent),
       this.domain,
       steps,
-      node,
+      undefined,
       infect(this, other),
+      nodeResolver,
     );
   }
 
@@ -959,13 +1105,13 @@ export class Interval {
     }
     // Log fails if this won't work.
     const steps = this.steps / (other.steps || 1);
-    const node = logNodes(this.node, other.node);
     return new Interval(
       log(this, other),
       this.domain,
       steps,
-      node,
+      undefined,
       infect(this, other),
+      lazyLogNodes(this.node, other.node),
     );
   }
 
@@ -1881,8 +2027,9 @@ export class ValBasis {
         value,
         other.domain,
         0,
-        intervalValueAs(value, other.node, true),
+        undefined,
         other,
+        lazyIntervalValueAs(value, other.node, true),
       );
     }
     if (other instanceof Val) {
@@ -2732,4 +2879,15 @@ export function intervalValueAs(
     default:
       return undefined;
   }
+}
+
+function lazyIntervalValueAs(
+  value: TimeMonzo | TimeReal,
+  node: IntervalLiteral | undefined,
+  simplify = false,
+) {
+  if (!node) {
+    return undefined;
+  }
+  return () => intervalValueAs(value, node, simplify);
 }

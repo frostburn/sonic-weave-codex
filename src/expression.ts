@@ -293,6 +293,8 @@ export type CoIntervalLiteral =
   | ReciprocalCentLiteral
   | ReciprocalLogarithmicHertzLiteral;
 
+export type IntervalLiteralResolver = () => IntervalLiteral | undefined;
+
 /**
  * Validate AST literal for display formatting.
  * @param node Interval literal to validate.
@@ -876,6 +878,49 @@ export function lensSubNodes(a?: IntervalLiteral, b?: IntervalLiteral) {
 export function pitchRoundToNodes(a?: IntervalLiteral, b?: IntervalLiteral) {
   return undefined;
 }
+
+function lazyUnaryNodeOp(
+  op: (node?: IntervalLiteral) => IntervalLiteral | undefined,
+  node?: IntervalLiteral,
+): IntervalLiteralResolver | undefined {
+  if (!node) {
+    return undefined;
+  }
+  return () => op(node);
+}
+
+function lazyBinaryNodeOp(
+  op: (a?: IntervalLiteral, b?: IntervalLiteral) => IntervalLiteral | undefined,
+  a?: IntervalLiteral,
+  b?: IntervalLiteral,
+): IntervalLiteralResolver | undefined {
+  if (!a || !b) {
+    return undefined;
+  }
+  return () => op(a, b);
+}
+
+export const lazyNegNode = lazyUnaryNodeOp.bind(undefined, negNode);
+export const lazyInvertNode = lazyUnaryNodeOp.bind(undefined, invertNode);
+export const lazyAbsNode = lazyUnaryNodeOp.bind(undefined, absNode);
+export const lazyPitchAbsNode = lazyUnaryNodeOp.bind(undefined, pitchAbsNode);
+export const lazySqrtNode = lazyUnaryNodeOp.bind(undefined, sqrtNode);
+export const lazyProjectNodes = lazyBinaryNodeOp.bind(undefined, projectNodes);
+export const lazyAddNodes = lazyBinaryNodeOp.bind(undefined, addNodes);
+export const lazySubNodes = lazyBinaryNodeOp.bind(undefined, subNodes);
+export const lazyLensAddNodes = lazyBinaryNodeOp.bind(undefined, lensAddNodes);
+export const lazyLensSubNodes = lazyBinaryNodeOp.bind(undefined, lensSubNodes);
+export const lazyRoundToNodes = lazyBinaryNodeOp.bind(undefined, roundToNodes);
+export const lazyModNodes = lazyBinaryNodeOp.bind(undefined, modNodes);
+export const lazyPitchRoundToNodes = lazyBinaryNodeOp.bind(
+  undefined,
+  pitchRoundToNodes,
+);
+export const lazyMulNodes = lazyBinaryNodeOp.bind(undefined, mulNodes);
+export const lazyDivNodes = lazyBinaryNodeOp.bind(undefined, divNodes);
+export const lazyPowNodes = lazyBinaryNodeOp.bind(undefined, powNodes);
+export const lazyIPowNodes = lazyBinaryNodeOp.bind(undefined, ipowNodes);
+export const lazyLogNodes = lazyBinaryNodeOp.bind(undefined, logNodes);
 
 function formatUps(literal: MonzoLiteral | FJS | AbsoluteFJS | MosStepLiteral) {
   let result: string;
