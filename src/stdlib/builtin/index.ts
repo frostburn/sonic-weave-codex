@@ -1640,10 +1640,20 @@ slice.__doc__ =
 slice.__node__ = builtinNode(slice);
 
 function zip(...args: any[][]) {
-  const minLength = Math.min(...args.map(a => a.length));
+  let minLength = Infinity;
+  for (let i = 0; i < args.length; ++i) {
+    minLength = Math.min(minLength, args[i].length);
+  }
+  if (!args.length) {
+    minLength = 0;
+  }
   const result: any[][] = [];
   for (let i = 0; i < minLength; ++i) {
-    result.push(args.map(a => a[i]));
+    const tuple: any[] = [];
+    for (let j = 0; j < args.length; ++j) {
+      tuple.push(args[j][i]);
+    }
+    result.push(tuple);
   }
   return result;
 }
@@ -1652,10 +1662,17 @@ zip.__doc__ =
 zip.__node__ = builtinNode(zip);
 
 function zipLongest(...args: any[][]) {
-  const maxLength = Math.max(...args.map(a => a.length));
+  let maxLength = 0;
+  for (let i = 0; i < args.length; ++i) {
+    maxLength = Math.max(maxLength, args[i].length);
+  }
   const result: any[][] = [];
   for (let i = 0; i < maxLength; ++i) {
-    result.push(args.map(a => a[i]));
+    const tuple: any[] = [];
+    for (let j = 0; j < args.length; ++j) {
+      tuple.push(args[j][i]);
+    }
+    result.push(tuple);
   }
   return result;
 }
