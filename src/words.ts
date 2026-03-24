@@ -265,8 +265,9 @@ export function stepString(monzos: (TimeMonzo | TimeReal)[]) {
   }
   const orderedSteps = [...steps];
   orderedSteps.sort((a, b) => a.compare(b));
-  const uniqueSteps = [orderedSteps.shift()!];
-  for (const step of orderedSteps) {
+  const uniqueSteps = [orderedSteps[0]];
+  for (let i = 1; i < orderedSteps.length; ++i) {
+    const step = orderedSteps[i];
     if (!step.equals(uniqueSteps[uniqueSteps.length - 1])) {
       uniqueSteps.push(step);
     }
@@ -293,9 +294,11 @@ export function stepString(monzos: (TimeMonzo | TimeReal)[]) {
       letters.push('¿');
       numNegative--;
     }
+    const greekLetters: string[] = [];
     for (let i = 0; i < numNegative; ++i) {
-      letters.unshift(String.fromCharCode(945 + i));
+      greekLetters.push(String.fromCharCode(945 + i));
     }
+    letters.push(...greekLetters.reverse());
   }
 
   if (numZero) {
@@ -330,6 +333,7 @@ export function stepString(monzos: (TimeMonzo | TimeReal)[]) {
     for (let i = 0; i < uniqueSteps.length; ++i) {
       if (step.strictEquals(uniqueSteps[i])) {
         result += letters[i];
+        break;
       }
     }
   }
