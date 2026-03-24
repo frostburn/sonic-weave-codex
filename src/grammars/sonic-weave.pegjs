@@ -283,7 +283,7 @@ VariableManipulationStatement
         value,
       };
     } else if (operator) {
-      error('Left-hand-side expression expected.');
+      throw new SyntaxError('Left-hand-side expression expected.');
     } else if (preferLeft) {
       return {
         type: 'ExpressionStatement',
