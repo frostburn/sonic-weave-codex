@@ -11,16 +11,16 @@ It powers the Scale Workshop 3 language, ships with a command-line interface, ex
 The `sonic-weave` package includes:
 
 - The SonicWeave language used by Scale Workshop 3.
-  - [Basic DSL guide](documentation/dsl.md)
-  - [Intermediate DSL guide](documentation/intermediate-dsl.md)
-  - [Advanced DSL guide](documentation/advanced-dsl.md)
-  - [Built-in reference](documentation/BUILTIN.md)
-- A [command-line interface](documentation/cli.md) for evaluating SonicWeave programs and exporting scales.
-- A [TypeScript/npm package guide](documentation/package.md).
-- A [template-tag guide](documentation/tag.md) for running SonicWeave programs inside JavaScript.
-- A [SonicWeave Interchange format reference](documentation/interchange.md) for `.swi` files.
-- A [technical overview](documentation/technical.md) that explains the language design and semantics.
-- Additional reference material for [tempering](documentation/tempering.md) and [extra comma flavors](documentation/commas.md).
+  - [Basic DSL guide](https://github.com/xenharmonic-devs/sonic-weave/blob/main/documentation/dsl.md)
+  - [Intermediate DSL guide](https://github.com/xenharmonic-devs/sonic-weave/blob/main/documentation/intermediate-dsl.md)
+  - [Advanced DSL guide](https://github.com/xenharmonic-devs/sonic-weave/blob/main/documentation/advanced-dsl.md)
+  - [Built-in reference](https://github.com/xenharmonic-devs/sonic-weave/blob/main/documentation/BUILTIN.md)
+- A [command-line interface](https://github.com/xenharmonic-devs/sonic-weave/blob/main/documentation/cli.md) for evaluating SonicWeave programs and exporting scales.
+- A [TypeScript/npm package guide](https://github.com/xenharmonic-devs/sonic-weave/blob/main/documentation/package.md).
+- A [template-tag guide](https://github.com/xenharmonic-devs/sonic-weave/blob/main/documentation/tag.md) for running SonicWeave programs inside JavaScript.
+- A [SonicWeave Interchange format reference](https://github.com/xenharmonic-devs/sonic-weave/blob/main/documentation/interchange.md) for `.swi` files.
+- A [technical overview](https://github.com/xenharmonic-devs/sonic-weave/blob/main/documentation/technical.md) that explains the language design and semantics.
+- Additional reference material for [tempering](https://github.com/xenharmonic-devs/sonic-weave/blob/main/documentation/tempering.md) and [extra comma flavors](https://github.com/xenharmonic-devs/sonic-weave/blob/main/documentation/commas.md).
 
 ## Quick examples
 
