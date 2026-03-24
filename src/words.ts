@@ -131,9 +131,11 @@ export function sub(v1: StepVector, v2: StepVector): StepVector {
  * @returns The rotated string.
  */
 export function rotate(str: string, offset: number): string {
-  return [...Array(str.length).keys()]
-    .map(i => str[mmod(i + offset, str.length)])
-    .join('');
+  if (!str.length) {
+    return str;
+  }
+  const i = mmod(offset, str.length);
+  return str.slice(i) + str.slice(0, i);
 }
 
 /* Elements in the resulting StepVector have the order given by `orderedLetterList`.
@@ -153,28 +155,27 @@ export function getStepVector(
   if (word.length === 0) {
     // Always return the zero vector if `word` is empty
     return zeroVector();
-  } else if (intervalClass % word.length === 0) {
-    return scalarMult(
-      stepSignature(word),
-      Math.floor(intervalClass / word.length),
-    );
+  }
+  const quotient = Math.floor(intervalClass / word.length);
+  if (intervalClass % word.length === 0) {
+    if (!quotient) {
+      return zeroVector();
+    }
+    return scalarMult(stepSignature(word), quotient);
   } else {
     // Initialize `result` to a prefix with `intervalClass / word.length` letters
-    const result = scalarMult(
-      stepSignature(word),
-      Math.floor(intervalClass / word.length),
-    );
-    const slice = String(word).slice(0, intervalClass % word.length);
-    // Do it the intuitive way:
+    const result = quotient ? scalarMult(stepSignature(word), quotient) : {};
     // For each letter encountered, if `letter` is not already in `result`,
     // then create a new entry for key `letter`; otherwise increment existing value for `letter`.
-    Array.from(slice).forEach(letter => {
+    const stop = intervalClass % word.length;
+    for (let i = 0; i < stop; ++i) {
+      const letter = word[i];
       if (hasOwn(result, letter)) {
         result[letter]++;
       } else {
         result[letter] = 1;
       }
-    });
+    }
     return result;
   }
 }
@@ -189,13 +190,14 @@ export function stepSignature(word: string): StepVector {
     return zeroVector();
   }
   const result = zeroVector();
-  Array.from(word).forEach(letter => {
+  for (let i = 0; i < word.length; ++i) {
+    const letter = word[i];
     if (hasOwn(result, letter)) {
       result[letter]++;
     } else {
       result[letter] = 1;
     }
-  });
+  }
   return result;
 }
 
