@@ -60,6 +60,19 @@ describe('SonicWeave Abstract Syntax Tree parser', () => {
     expect(() => parse(',;')).toThrow();
   });
 
+  it('throws a syntax error for invalid assignment left-hand sides', () => {
+    let thrown: unknown;
+    try {
+      parse('M𝄳0+=y');
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBeInstanceOf(SyntaxError);
+    expect((thrown as Error).message).toContain(
+      'Left-hand-side expression expected.',
+    );
+  });
+
   it('parses kilohertz', () => {
     const ast = parseSingle('1 kHz');
     expect(ast).toEqual({
