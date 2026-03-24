@@ -333,6 +333,7 @@ export function stepString(monzos: (TimeMonzo | TimeReal)[]) {
     for (let i = 0; i < uniqueSteps.length; ++i) {
       if (step.strictEquals(uniqueSteps[i])) {
         result += letters[i];
+        break;
       }
     }
   }
