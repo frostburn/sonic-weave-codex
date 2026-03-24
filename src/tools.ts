@@ -26,14 +26,17 @@ export function subtensions(monzos: TimeMonzo[]): Subtender[] {
   if (!n) {
     return [];
   }
-  const numComponents = Math.max(...monzos.map(m => m.numberOfComponents));
+  let numComponents = 0;
+  for (let i = 0; i < n; ++i) {
+    numComponents = Math.max(numComponents, monzos[i].numberOfComponents);
+  }
   const scale = monzos.map(m => m.clone());
   for (const monzo of scale) {
     monzo.numberOfComponents = numComponents;
   }
   const period = scale[n - 1];
-  for (const monzo of [...scale]) {
-    scale.push(period.mul(monzo) as TimeMonzo);
+  for (let i = 0; i < n; ++i) {
+    scale.push(period.mul(scale[i]) as TimeMonzo);
   }
 
   const result: Subtender[] = [];
@@ -43,6 +46,7 @@ export function subtensions(monzos: TimeMonzo[]): Subtender[] {
     for (const {monzo, subtensions} of result) {
       if (monzo.strictEquals(scale[i])) {
         subtensions.add(i + 1);
+        break;
       }
     }
     result.push({monzo: scale[i], subtensions: new Set([i + 1])});
@@ -57,6 +61,7 @@ export function subtensions(monzos: TimeMonzo[]): Subtender[] {
         if (width.strictEquals(monzo)) {
           subtensions.add(j);
           unique = false;
+          break;
         }
       }
       if (unique) {
@@ -77,14 +82,17 @@ export function hasConstantStructure(monzos: TimeMonzo[]) {
   if (!n) {
     return true;
   }
-  const numComponents = Math.max(...monzos.map(m => m.numberOfComponents));
+  let numComponents = 0;
+  for (let i = 0; i < n; ++i) {
+    numComponents = Math.max(numComponents, monzos[i].numberOfComponents);
+  }
   const scale = monzos.map(m => m.clone());
   for (const monzo of scale) {
     monzo.numberOfComponents = numComponents;
   }
   const period = scale[n - 1];
-  for (const monzo of [...scale]) {
-    scale.push(period.mul(monzo) as TimeMonzo);
+  for (let i = 0; i < n; ++i) {
+    scale.push(period.mul(scale[i]) as TimeMonzo);
   }
 
   const subtensions: [TimeMonzo, number][] = [];
@@ -110,6 +118,7 @@ export function hasConstantStructure(monzos: TimeMonzo[]) {
             return false;
           }
           unique = false;
+          break;
         }
       }
       if (unique) {
