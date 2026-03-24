@@ -150,7 +150,7 @@ for (const [prime, fraction] of Object.entries(HELMHOLTZ_ELLIS)) {
 }
 
 export function getHelmholtzEllis(index: number) {
-  if (index < HELMHOLTZ_ELLIS_ARRAY.length) {
+  if (index >= 0 && index < HELMHOLTZ_ELLIS_ARRAY.length) {
     return HELMHOLTZ_ELLIS_ARRAY[index];
   }
   return UNITY;
@@ -174,7 +174,7 @@ for (const [prime, fraction] of Object.entries(HEWM53)) {
 }
 
 export function getHEWM53(index: number) {
-  if (index < HEWM53_ARRAY.length) {
+  if (index >= 0 && index < HEWM53_ARRAY.length) {
     return HEWM53_ARRAY[index];
   }
   return UNITY;
