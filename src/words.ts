@@ -292,8 +292,9 @@ export function stepString(monzos: (TimeMonzo | TimeReal)[]) {
     letters.push(...NEGATIVE_STEP_LETTERS_BY_VARIETY[numNegative]);
   } else {
     // Too many steps, use fillers.
+    let fillerCount = 0;
     while (numNegative > 25) {
-      letters.push('¿');
+      fillerCount++;
       numNegative--;
     }
     const greekLetters: string[] = [];
@@ -301,6 +302,9 @@ export function stepString(monzos: (TimeMonzo | TimeReal)[]) {
       greekLetters.push(String.fromCharCode(945 + i));
     }
     letters.push(...greekLetters.reverse());
+    for (let i = 0; i < fillerCount; ++i) {
+      letters.push('¿');
+    }
   }
 
   if (numZero) {

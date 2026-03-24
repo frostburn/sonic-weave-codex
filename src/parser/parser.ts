@@ -9,6 +9,7 @@ import {PRELUDE_SOURCE, PRELUDE_VOLATILES} from '../stdlib/prelude';
 import {RootContext} from '../context';
 import {Program} from '../ast';
 import {StatementVisitor} from './statement';
+import {hasOwn} from '../utils';
 
 /**
  * Parse a string of text written in the SonicWeave domain specific language into an abstract syntax tree.
@@ -151,8 +152,9 @@ export function evaluateExpression(
 ): SonicWeaveValue {
   const visitor = getSourceVisitor(includePrelude, extraBuiltins);
   const program = parseAST(source);
-  for (const statement of program.body.slice(0, -1)) {
-    const interrupt = visitor.visit(statement);
+  const {body} = program;
+  for (let i = 0; i < body.length - 1; ++i) {
+    const interrupt = visitor.visit(body[i]);
     if (interrupt) {
       throw new Error(`Illegal ${interrupt.type}.`);
     }
@@ -162,7 +164,7 @@ export function evaluateExpression(
       'Deferred actions not allowed when evaluating expressions.',
     );
   }
-  const finalStatement = program.body[program.body.length - 1];
+  const finalStatement = body[body.length - 1];
   if (finalStatement.type !== 'ExpressionStatement') {
     throw new Error(`Expected expression. Got ${finalStatement.type}.`);
   }
@@ -203,8 +205,10 @@ function convert(value: any): SonicWeaveValue {
         return value.map(convert) as Interval[];
       } else {
         const result: Record<string, SonicWeavePrimitive> = {};
-        for (const [key, subValue] of Object.entries(value)) {
-          result[key] = convert(subValue) as SonicWeavePrimitive;
+        for (const key in value) {
+          if (hasOwn(value, key)) {
+            result[key] = convert(value[key]) as SonicWeavePrimitive;
+          }
         }
         return result;
       }
@@ -239,8 +243,9 @@ export function createTag(
     }
     const program = parseAST(source);
     if (expression) {
-      for (const statement of program.body.slice(0, -1)) {
-        const interrupt = visitor.visit(statement);
+      const {body} = program;
+      for (let i = 0; i < body.length - 1; ++i) {
+        const interrupt = visitor.visit(body[i]);
         if (interrupt) {
           throw new Error(`Illegal ${interrupt.type}.`);
         }
@@ -250,7 +255,7 @@ export function createTag(
           'Deferred actions not allowed when evaluating tagged templates.',
         );
       }
-      const finalStatement = program.body[program.body.length - 1];
+      const finalStatement = body[body.length - 1];
       if (finalStatement.type !== 'ExpressionStatement') {
         throw new Error(`Expected expression. Got ${finalStatement.type}.`);
       }
