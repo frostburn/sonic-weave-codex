@@ -1219,11 +1219,10 @@ FractionLiteral
   }
 
 UpsAndDowns 'up-and-down'
-  = ('^' / 'v' / '/' / '\\')* {
-    const t = text();
+  = chars: ('^' / 'v' / '/' / '\\')* {
     let ups = 0;
     let lifts = 0;
-    for (const c of t) {
+    for (const c of chars) {
       if (c === '^') {
         ++ups;
       } else if (c === 'v') {
