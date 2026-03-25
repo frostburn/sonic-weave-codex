@@ -2,6 +2,10 @@
 
 This document describes the command-line interface provided by the `sonic-weave` package.
 
+## Requirements
+
+- Node.js 20.0.0 or newer
+
 # Table of Contents
 1. [REPL](#repl)
     1. [Input](#input)
@@ -13,6 +17,8 @@ This document describes the command-line interface provided by the `sonic-weave`
 ## REPL
 
 Start the read-eval-print loop with `npx sonic-weave` when the package is installed locally, or with `sonic-weave` when it is installed globally.
+
+If your install skips optional dependencies and `commander` is unavailable, the CLI exits with a clear error message describing how to install dependencies.
 
 After the standard library loads, you will see the prompt:
 
