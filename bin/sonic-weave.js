@@ -51,6 +51,7 @@ if (require.main === module) {
         process.stdout.write(toSonicWeaveInterchange(data.toString()));
       } else {
         process.stderr.write(`Unrecognized output format ${options.format}\n`);
+        process.exitCode = 1;
       }
     }
   }
