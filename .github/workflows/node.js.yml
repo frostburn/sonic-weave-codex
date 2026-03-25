@@ -28,3 +28,13 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm test
+    - name: Validate publishable tarball contents
+      run: |
+        npm pack --dry-run --json | tee npm-pack-dry-run.json
+        node -e "const fs=require('fs'); const report=JSON.parse(fs.readFileSync('npm-pack-dry-run.json','utf8')); const files=(report?.[0]?.files||[]).map(f=>f.path); const required=['dist/','bin/']; const missing=required.filter(req => !files.some(file => file===req || file.startsWith(req))); if(missing.length){ console.error('Missing required packaged paths:', missing.join(', ')); process.exit(1); } console.log('Verified required packaged paths:', required.join(', '));"
+    - name: Upload npm pack dry-run report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: npm-pack-dry-run-${{ matrix.node-version }}
+        path: npm-pack-dry-run.json
