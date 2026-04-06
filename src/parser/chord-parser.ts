@@ -1,11 +1,11 @@
-import {parse} from './sonic-weave-chord';
-import {evaluateExpression, evaluateSource, parseAST} from './parser';
-import {Interval, Temperament, Val, ValBasis} from '../interval';
-import {sparseOffsetToVal, wartsToVal} from '../warts';
-import {TimeMonzo, TimeReal, getNumberOfComponents} from '../monzo';
+import {parse} from './sonic-weave-chord.js';
+import {evaluateExpression, evaluateSource, parseAST} from './parser.js';
+import {Interval, Temperament, Val, ValBasis} from '../interval.js';
+import {sparseOffsetToVal, wartsToVal} from '../warts.js';
+import {TimeMonzo, TimeReal, getNumberOfComponents} from '../monzo.js';
 import {Fraction, PRIMES} from 'xen-dev-utils';
-import {ValBasisElement} from '../expression';
-import {StatementVisitor} from './statement';
+import {ValBasisElement} from '../expression.js';
+import {StatementVisitor} from './statement.js';
 
 const CTE_EQUAVE_WEIGHT = 5000;
 /**

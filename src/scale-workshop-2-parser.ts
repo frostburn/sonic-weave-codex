@@ -6,15 +6,15 @@ import {
   gcd,
   valueToCents,
 } from 'xen-dev-utils';
-import {Domain, TimeMonzo, TimeReal, getNumberOfComponents} from './monzo';
-import {parse} from './scale-workshop-2-ast';
-import {Interval} from './interval';
+import {Domain, TimeMonzo, TimeReal, getNumberOfComponents} from './monzo.js';
+import {parse} from './scale-workshop-2-ast.js';
+import {Interval} from './interval.js';
 import {
   CentsLiteral,
   DecimalLiteral,
   NedjiLiteral,
   uniformInvertNode,
-} from './expression';
+} from './expression.js';
 
 const ZERO = new Fraction(0);
 

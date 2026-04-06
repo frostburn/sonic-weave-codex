@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest';
-import {parse} from '../paren-counter';
+import {parse} from '../paren-counter.js';
 
 describe('Parenthesis counter', () => {
   it('counts complete statements', () => {
