@@ -29,8 +29,18 @@ export default [
     },
   },
   {
+    files: ['scripts/inspect-printable-ascii.js', 'scripts/inspect-random-programs.js'],
+    languageOptions: {
+      sourceType: 'module',
+      globals: {
+        process: 'readonly',
+        console: 'readonly',
+      },
+    },
+  },
+  {
     files: ['**/*.js'],
-    ignores: ['bin/*.js'],
+    ignores: ['bin/*.js', 'scripts/inspect-printable-ascii.js', 'scripts/inspect-random-programs.js'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'commonjs',
