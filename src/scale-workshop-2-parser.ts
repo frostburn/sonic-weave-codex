@@ -7,7 +7,7 @@ import {
   valueToCents,
 } from 'xen-dev-utils';
 import {Domain, TimeMonzo, TimeReal, getNumberOfComponents} from './monzo.js';
-import {parse} from './scale-workshop-2-ast.js';
+import * as scaleWorkshop2Parser from './scale-workshop-2-ast.js';
 import {Interval} from './interval.js';
 import {
   CentsLiteral,
@@ -78,7 +78,9 @@ type Expression =
   | BinaryExpression;
 
 function parseAst(input: string): Expression {
-  return parse(input);
+  return (scaleWorkshop2Parser as {parse: (input: string) => Expression}).parse(
+    input,
+  );
 }
 
 function parseDecimal(sw2Node: NumericLiteral, numberOfComponents: number) {

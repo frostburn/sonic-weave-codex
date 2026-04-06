@@ -1,4 +1,4 @@
-import {parse} from './sonic-weave-chord.js';
+import * as sonicWeaveChordParser from './sonic-weave-chord.js';
 import {evaluateExpression, evaluateSource, parseAST} from './parser.js';
 import {Interval, Temperament, Val, ValBasis} from '../interval.js';
 import {sparseOffsetToVal, wartsToVal} from '../warts.js';
@@ -25,7 +25,9 @@ export type OptimizationScheme = 'TE' | 'POTE' | 'CTE';
  * @throws An error if the chord syntax is invalid or evaluation fails before interval results can be collected.
  */
 export function parseChord(input: string, includePrelude = true): Interval[] {
-  const parts: string[] = parse(input) as any;
+  const parts: string[] = (
+    sonicWeaveChordParser as {parse: (input: string) => string[]}
+  ).parse(input);
   const visitor = evaluateSource(`[${parts.join(', ')}]`, includePrelude);
   const result = visitor.currentScale;
   return result.filter(i => i instanceof Interval);
@@ -98,7 +100,9 @@ export function parseVals(
   basis: ValBasis,
   includePrelude = true,
 ): Val[] {
-  const parts: string[] = parse(input) as any;
+  const parts: string[] = (
+    sonicWeaveChordParser as {parse: (input: string) => string[]}
+  ).parse(input);
   const result: Val[] = [];
   for (let part of parts) {
     if (part.includes('<')) {

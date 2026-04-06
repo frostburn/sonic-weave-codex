@@ -20,7 +20,17 @@ export default [
     ],
   },
   {
+    files: ['bin/*.js'],
+    languageOptions: {
+      sourceType: 'module',
+      globals: {
+        process: 'readonly',
+      },
+    },
+  },
+  {
     files: ['**/*.js'],
+    ignores: ['bin/*.js'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'commonjs',

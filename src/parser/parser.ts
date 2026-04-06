@@ -1,7 +1,7 @@
 import {Fraction} from 'xen-dev-utils';
 import {Color, Interval, Temperament, Val, ValBasis} from '../interval.js';
 import {TimeMonzo} from '../monzo.js';
-import {parse} from './sonic-weave-ast.js';
+import * as sonicWeaveAstParser from './sonic-weave-ast.js';
 import {CSS_COLOR_CONTEXT} from '../css-colors.js';
 import {SonicWeaveValue, SonicWeavePrimitive} from '../stdlib/index.js';
 import {BUILTIN_CONTEXT} from '../stdlib/builtin/index.js';
@@ -17,7 +17,9 @@ import {hasOwn} from '../utils.js';
  * @returns The program as the root node of the AST.
  */
 export function parseAST(source: string): Program {
-  return parse(source);
+  return (sonicWeaveAstParser as {parse: (source: string) => Program}).parse(
+    source,
+  );
 }
 
 // Cached globally on first initialization.

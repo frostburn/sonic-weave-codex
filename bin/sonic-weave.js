@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 
-'use strict';
+import {existsSync, readFileSync} from 'node:fs';
+import {join} from 'node:path';
+import {start} from 'node:repl';
+import {createRequire} from 'node:module';
+import {fileURLToPath} from 'node:url';
+import {toScalaScl, toSonicWeaveInterchange, repl} from '../dist/index.js';
 
-const {existsSync, readFileSync} = require('fs');
-const {join} = require('path');
-const {start} = require('repl');
+const require = createRequire(import.meta.url);
 const {version} = require('../package.json');
-const {toScalaScl, toSonicWeaveInterchange, repl} = require('../dist');
 
 function loadCommander() {
-  for (const searchPath of module.paths) {
+  const searchPaths = require.resolve.paths('commander') ?? [];
+  for (const searchPath of searchPaths) {
     const candidateDir = join(searchPath, 'commander');
     if (existsSync(join(candidateDir, 'package.json'))) {
       return require(candidateDir);
@@ -18,7 +21,7 @@ function loadCommander() {
   return null;
 }
 
-if (require.main === module) {
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const commander = loadCommander();
   if (!commander) {
     process.stderr.write(

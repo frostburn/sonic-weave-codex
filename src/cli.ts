@@ -11,11 +11,20 @@ import {
 import type {REPLServer, ReplOptions} from 'repl';
 import type {Context} from 'node:vm';
 import {createRequire} from 'node:module';
-import {parse as parenCounter} from './parser/paren-counter.js';
+import * as parenCounterParser from './parser/paren-counter.js';
 import {literalToString} from './expression.js';
 import {TimeReal} from './monzo.js';
 const require = createRequire(import.meta.url);
 const {version} = require('../package.json');
+const parenCounter = (
+  parenCounterParser as {
+    parse: (input: string) => {
+      parens: number;
+      squares: number;
+      curlies: number;
+    };
+  }
+).parse;
 
 /**
  * Convert a program in the SonicWeave DSL to the Scala .scl format.
