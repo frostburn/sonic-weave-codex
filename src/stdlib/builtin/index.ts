@@ -301,7 +301,10 @@ function simplify(
   if (isArrayOrRecord(interval)) {
     return unaryBroadcast.bind(this)(interval, simplify.bind(this));
   }
-  return pubSimplify(interval as unknown);
+  if (interval instanceof Val) {
+    return pubSimplify(interval);
+  }
+  return pubSimplify(interval as Interval | boolean);
 }
 simplify.__doc__ =
   'Get rid of interval formatting. Simplifies a ratio to lowest terms.';
@@ -2274,8 +2277,12 @@ arrayRepeat.__node__ = builtinNode(arrayRepeat, PARENT_SCALE);
 
 function some(
   this: ExpressionVisitor,
-  array?: unknown[],
-  test?: (value: unknown, index: Interval, array: unknown[]) => unknown,
+  array?: SonicWeaveValue[],
+  test?: (
+    value: SonicWeaveValue,
+    index: Interval,
+    array: SonicWeaveValue[],
+  ) => unknown,
 ) {
   if (!array) {
     array = this.currentScale;
@@ -2292,8 +2299,12 @@ some.__node__ = builtinNode(some, PARENT_SCALE);
 
 function every(
   this: ExpressionVisitor,
-  array?: unknown[],
-  test?: (value: unknown, index: Interval, array: unknown[]) => unknown,
+  array?: SonicWeaveValue[],
+  test?: (
+    value: SonicWeaveValue,
+    index: Interval,
+    array: SonicWeaveValue[],
+  ) => unknown,
 ) {
   if (!array) {
     array = this.currentScale;
@@ -2383,14 +2394,14 @@ lstr.__doc__ =
   'Obtain a "best effort" short string representing a primitive value. Vectorizes over arrays.';
 lstr.__node__ = builtinNode(lstr);
 
-function print(this: ExpressionVisitor, ...args: unknown[]) {
+function print(this: ExpressionVisitor, ...args: SonicWeaveValue[]) {
   const s = repr.bind(this);
   console.log(...args.map(a => (typeof a === 'string' ? a : s(a))));
 }
 print.__doc__ = 'Print the arguments to the console.';
 print.__node__ = builtinNode(print);
 
-function warn(this: ExpressionVisitor, ...args: unknown[]) {
+function warn(this: ExpressionVisitor, ...args: SonicWeaveValue[]) {
   const s = repr.bind(this);
   console.log(...args.map(a => (typeof a === 'string' ? a : s(a))));
 }
@@ -2486,7 +2497,7 @@ function centsColor(
 ): Color | Color[] {
   if (Array.isArray(interval)) {
     this.spendGas(interval.length);
-    return interval.map(centsColor as unknown);
+    return interval.map(i => centsColor.call(this, i) as Color);
   }
   return pubCentsColor.bind(this.rootContext)(upcastBool(interval));
 }
@@ -2500,7 +2511,7 @@ export function factorColor(
 ): Color | Color[] {
   if (Array.isArray(interval)) {
     this.spendGas(interval.length);
-    return interval.map(factorColor as unknown);
+    return interval.map(i => factorColor.call(this, i) as Color);
   }
   return pubFactorColor.bind(this.rootContext)(upcastBool(interval));
 }

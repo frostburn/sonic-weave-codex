@@ -304,17 +304,22 @@ export class Interval {
     if (
       typeof value === 'object' &&
       value !== null &&
-      value.type === 'Interval'
+      (value as {type?: unknown}).type === 'Interval'
     ) {
+      const serialized = value as Record<string, unknown>;
       const result = new Interval(
-        reviveMonzo(value.v),
-        value.d ? 'logarithmic' : 'linear',
-        value.s,
-        intervalLiteralFromJSON(value.n),
+        reviveMonzo(serialized.v as ReturnType<TimeMonzo['toJSON']>),
+        serialized.d ? 'logarithmic' : 'linear',
+        serialized.s as number,
+        intervalLiteralFromJSON(serialized.n),
       );
-      result.label = value.l;
-      result.color = value.c && new Color(value.c);
-      result.trackingIds = new Set(value.t);
+      if (serialized.l !== undefined) {
+        result.label = serialized.l as string;
+      }
+      result.color = serialized.c
+        ? new Color(serialized.c as string)
+        : undefined;
+      result.trackingIds = new Set(serialized.t as number[]);
       return result;
     }
     return value;
@@ -2470,7 +2475,7 @@ export class Temperament {
       }
       basis = new ValBasis(subgroup.map(p => TimeMonzo.fromFraction(p)));
       for (const fs of factorizations) {
-        smonzos.push(subgroup.map(p => BigInt((fs.get(p) ?? 0).valueOf())));
+        smonzos.push(subgroup.map(p => BigInt(Number(fs.get(p) ?? 0))));
       }
     }
     smonzos = hnf(smonzos);

@@ -4,6 +4,18 @@ import {TimeMonzo} from './monzo.js';
 import {ZERO} from './utils.js';
 import {MosConfig, mosConfigToJSON, reviveMosConfig} from './diamond-mos.js';
 
+interface SerializedRootContext {
+  type: 'RootContext';
+  title: string;
+  unisonFrequency?: unknown;
+  C4: unknown;
+  up: unknown;
+  lift: unknown;
+  gas: number;
+  trackingIndex: number;
+  mosConfig: unknown;
+}
+
 /**
  * Root context of a SonicWeave runtime containing the scale title, root pitch, value of the 'up' inflection etc.
  */
@@ -93,18 +105,22 @@ export class RootContext {
     if (
       typeof value === 'object' &&
       value !== null &&
-      value.type === 'RootContext'
+      (value as {type?: unknown}).type === 'RootContext'
     ) {
-      const result = new RootContext(value.gas);
-      result.title = value.title;
+      const serialized = value as SerializedRootContext;
+      const result = new RootContext(serialized.gas);
+      result.title = serialized.title;
       result.unisonFrequency =
-        TimeMonzo.reviver('unisonFrequency', value.unisonFrequency) ??
-        undefined;
-      result.C4 = TimeMonzo.reviver('C4', value.C4);
-      result.up = Interval.reviver('up', value.up);
-      result.lift = Interval.reviver('lift', value.lift);
-      result.trackingIndex = value.trackingIndex;
-      result.mosConfig = reviveMosConfig(value.mosConfig);
+        (TimeMonzo.reviver('unisonFrequency', serialized.unisonFrequency) as
+          | TimeMonzo
+          | undefined) ?? undefined;
+      result.C4 = TimeMonzo.reviver('C4', serialized.C4) as TimeMonzo;
+      result.up = Interval.reviver('up', serialized.up) as Interval;
+      result.lift = Interval.reviver('lift', serialized.lift) as Interval;
+      result.trackingIndex = serialized.trackingIndex;
+      result.mosConfig = reviveMosConfig(
+        serialized.mosConfig as ReturnType<typeof mosConfigToJSON>,
+      );
       return result;
     }
     return value;

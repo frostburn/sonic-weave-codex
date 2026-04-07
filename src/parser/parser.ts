@@ -10,6 +10,7 @@ import {RootContext} from '../context.js';
 import {Program} from '../ast.js';
 import {StatementVisitor} from './statement.js';
 import {hasOwn} from '../utils.js';
+import type {SonicWeaveFunction} from '../stdlib/runtime.js';
 
 /**
  * Parse a string of text written in the SonicWeave domain specific language into an abstract syntax tree.
@@ -177,9 +178,10 @@ function convert(value: unknown): SonicWeaveValue {
   switch (typeof value) {
     case 'string':
     case 'undefined':
-    case 'function':
     case 'boolean':
       return value;
+    case 'function':
+      return value as SonicWeaveFunction;
     case 'number':
       if (Number.isInteger(value)) {
         return Interval.fromInteger(value);
@@ -205,10 +207,11 @@ function convert(value: unknown): SonicWeaveValue {
       } else if (Array.isArray(value)) {
         return value.map(convert) as Interval[];
       } else {
+        const objectValue = value as Record<string, unknown>;
         const result: Record<string, SonicWeavePrimitive> = {};
-        for (const key in value) {
-          if (hasOwn(value, key)) {
-            result[key] = convert(value[key]) as SonicWeavePrimitive;
+        for (const key in objectValue) {
+          if (hasOwn(objectValue, key)) {
+            result[key] = convert(objectValue[key]) as SonicWeavePrimitive;
           }
         }
         return result;

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {relative, repr} from './stdlib/index.js';
+import {relative, repr, type SonicWeaveValue} from './stdlib/index.js';
 import {Interval} from './interval.js';
 import {
   ExpressionVisitor,
@@ -113,7 +113,7 @@ export function repl(start: (options?: string | ReplOptions) => REPLServer) {
   ) {
     currentCmd += evalCmd;
 
-    let counts: unknown;
+    let counts: {parens: number; squares: number; curlies: number};
     try {
       counts = parenCounter(currentCmd);
     } catch (e) {
@@ -125,7 +125,10 @@ export function repl(start: (options?: string | ReplOptions) => REPLServer) {
           cb(e, undefined);
         }
       } else {
-        cb(new Error(repr.bind(visitor.rootContext)(e as unknown)), undefined);
+        cb(
+          new Error(repr.bind(visitor.rootContext)(e as SonicWeaveValue)),
+          undefined,
+        );
       }
       return;
     }
@@ -186,7 +189,7 @@ export function repl(start: (options?: string | ReplOptions) => REPLServer) {
       let err =
         e instanceof Error
           ? e
-          : new Error(repr.bind(visitor.rootContext)(e as unknown));
+          : new Error(repr.bind(visitor.rootContext)(e as SonicWeaveValue));
       if (err.name === 'SyntaxError') {
         err = new Error(err.message);
       }
