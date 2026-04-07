@@ -146,7 +146,7 @@ const SERIALIZED =
 
 describe('Interval JSON serialization', () => {
   it('can be serialized alongside other data', () => {
-    const data: any = [
+    const data: unknown = [
       'hello',
       sw`12`,
       12,

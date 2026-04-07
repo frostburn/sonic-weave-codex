@@ -173,7 +173,7 @@ export function evaluateExpression(
   return subVisitor.visit(finalStatement.expression);
 }
 
-function convert(value: any): SonicWeaveValue {
+function convert(value: unknown): SonicWeaveValue {
   switch (typeof value) {
     case 'string':
     case 'undefined':
@@ -231,7 +231,7 @@ export function createTag(
   extraBuiltins?: Record<string, SonicWeaveValue>,
   escapeStrings = false,
 ) {
-  function tag(strings: TemplateStringsArray, ...args: any[]) {
+  function tag(strings: TemplateStringsArray, ...args: unknown[]) {
     const fragments = escapeStrings ? strings : strings.raw;
     const visitor = getSourceVisitor(includePrelude, extraBuiltins);
     if (!visitor.rootContext) {
@@ -299,7 +299,7 @@ Object.defineProperty(swr, 'name', {
  */
 export const sw$r = createTag(false) as (
   strings: TemplateStringsArray,
-  ...args: any[]
+  ...args: unknown[]
 ) => Interval[];
 Object.defineProperty(swr, 'name', {
   value: 'sw$r',
@@ -336,7 +336,7 @@ Object.defineProperty(sw, 'name', {
  */
 export const sw$ = createTag(false, true, undefined, true) as (
   strings: TemplateStringsArray,
-  ...args: any[]
+  ...args: unknown[]
 ) => Interval[];
 Object.defineProperty(swr, 'name', {
   value: 'sw$',

@@ -507,7 +507,7 @@ export function pythagoreanMonzo(node: Pythagorean): TimeMonzo {
  * Convert an absolute Pythagorean pitch node to its monzo representation.
  * @param node Absolute pitch node to convert.
  * @returns A {@link TimeMonzo} rooted at octave 4, suitable for later interpretation as an absolute pitch.
- * @throws An error if the nominal or any accidental is unassigned.
+ * @throws An error if the nominal or unknown accidental is unassigned.
  */
 export function absoluteMonzo(node: AbsolutePitch) {
   if (!NOMINAL_VECTORS.has(node.nominal)) {
@@ -653,7 +653,7 @@ const SEMIOCTAVE_NOMINALS: Nominal[] = ['η', 'α', 'β', 'γ', 'δ', 'ε', 'ζ'
 const ACCIDENTAL_BY_OFFSET = new Map<string, SplitAccidental>();
 const BASE_OFFSETS: [Fraction, Accidental][] = [];
 for (const accidental of ['♯', '♭', '‡', 'd'] as Accidental[]) {
-  const [_, threes] = ACCIDENTAL_VECTORS.get(accidental)!;
+  const [, threes] = ACCIDENTAL_VECTORS.get(accidental)!;
   const offset = new Fraction(threes).div(SEVEN);
   ACCIDENTAL_BY_OFFSET.set(offset.toFraction(), {fraction: '', accidental});
   BASE_OFFSETS.push([offset, accidental]);

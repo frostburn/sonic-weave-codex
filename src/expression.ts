@@ -1125,11 +1125,11 @@ export function numberToDecimalLiteral(
   num: number | Fraction,
   flavor: NumericFlavor,
 ): DecimalLiteral {
-  let [wholeStr, fractional] = num.toString().split('.');
+  const [wholeStr, fractionalString] = num.toString().split('.');
   let sign: Sign = '';
   let whole = BigInt(wholeStr);
   let exponent: number | null = null;
-  fractional ??= '';
+  let fractional = fractionalString ?? '';
   if (whole < 0n) {
     sign = '-';
     whole = -whole;
@@ -1172,7 +1172,7 @@ export function integerToVectorComponent(num: number): VectorComponent {
 
 export function literalToJSON(
   literal?: IntervalLiteral | CoIntervalLiteral | ValBasisLiteral,
-): any {
+): unknown {
   if (!literal) {
     return undefined;
   }
@@ -1242,7 +1242,7 @@ export function literalToJSON(
 }
 
 export function intervalLiteralFromJSON(
-  object: any,
+  object: unknown,
 ): IntervalLiteral | undefined {
   if (object === undefined) {
     return undefined;

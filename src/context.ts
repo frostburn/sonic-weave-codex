@@ -89,7 +89,7 @@ export class RootContext {
    * @param value Property value.
    * @returns Deserialized {@link RootContext} instance or other data without modifications.
    */
-  static reviver(key: string, value: any) {
+  static reviver(key: string, value: unknown) {
     if (
       typeof value === 'object' &&
       value !== null &&
