@@ -21,12 +21,14 @@ This document describes the `sonic-weave` npm package and its main runtime types
 The following package subpaths are supported public APIs and are considered semver-stable entrypoints:
 
 - `sonic-weave` → aggregate API for the package root.
-- `sonic-weave/parser` → parser-related APIs exported from `src/parser/index.ts`.
+- `sonic-weave/parser` → parse-only grammar APIs exported from `src/parser-api.ts`.
 - `sonic-weave/runtime` → SonicWeave runtime value and helper APIs exported via `src/runtime.ts`.
 - `sonic-weave/monzo` → monzo and time-value APIs exported from `src/monzo.ts`.
 - `sonic-weave/scale-workshop2` → Scale Workshop 2 line parser APIs exported via `src/scale-workshop2.ts`.
 
 These subpaths are preferred over reaching into internal file paths because they are versioned as part of the public package contract and work better with modern bundlers (including Vite) for chunking and dependency graph analysis.
+
+In particular, `sonic-weave/parser` is intentionally limited to parse-only exports so parser-only consumers do not pull the evaluation/runtime graph unless they explicitly import it from the package root.
 
 ## Type reference
 

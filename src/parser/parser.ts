@@ -1,7 +1,6 @@
 import {Fraction} from 'xen-dev-utils';
 import {Color, Interval, Temperament, Val, ValBasis} from '../interval.js';
 import {TimeMonzo} from '../monzo.js';
-import * as sonicWeaveAstParser from './sonic-weave-ast.js';
 import {CSS_COLOR_CONTEXT} from '../css-colors.js';
 import {SonicWeaveValue, SonicWeavePrimitive} from '../stdlib/index.js';
 import {BUILTIN_CONTEXT} from '../stdlib/builtin/index.js';
@@ -10,17 +9,9 @@ import {RootContext} from '../context.js';
 import {Program} from '../ast.js';
 import {StatementVisitor} from './statement.js';
 import {hasOwn} from '../utils.js';
+import {parseAST} from './parse.js';
 
-/**
- * Parse a string of text written in the SonicWeave domain specific language into an abstract syntax tree.
- * @param source Source code for a SonicWeave program.
- * @returns The program as the root node of the AST.
- */
-export function parseAST(source: string): Program {
-  return (sonicWeaveAstParser as {parse: (source: string) => Program}).parse(
-    source,
-  );
-}
+export {parseAST} from './parse.js';
 
 // Cached globally on first initialization.
 let SOURCE_VISITOR_WITH_PRELUDE: StatementVisitor | null = null;

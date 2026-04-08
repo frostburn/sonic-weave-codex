@@ -84,8 +84,8 @@
       "import": "./dist/index.js"
     },
     "./parser": {
-      "types": "./dist/parser/index.d.ts",
-      "import": "./dist/parser/index.js"
+      "types": "./dist/parser-api.d.ts",
+      "import": "./dist/parser-api.js"
     },
     "./runtime": {
       "types": "./dist/runtime.d.ts",
