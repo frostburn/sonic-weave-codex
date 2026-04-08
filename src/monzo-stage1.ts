@@ -1,6 +1,9 @@
 import {
   Fraction,
   FractionValue,
+  valueToCents,
+  PRIMES,
+  PRIME_CENTS,
   primeLimit,
   toMonzoAndResidual,
   centsToValue,
@@ -161,5 +164,117 @@ export class Stage1TimeMonzo {
 
   div(other: any): any {
     return this.mul(other.inverse());
+  }
+
+  isScalar() {
+    return !this.timeExponent.n;
+  }
+
+  equals(other: any) {
+    if (!(other instanceof Stage1TimeMonzo)) {
+      return false;
+    }
+    if (!this.timeExponent.equals(other.timeExponent)) {
+      return false;
+    }
+    if (!this.residual.equals(other.residual)) {
+      return false;
+    }
+    const len = Math.max(
+      this.primeExponents.length,
+      other.primeExponents.length,
+    );
+    for (let i = 0; i < len; ++i) {
+      if (
+        !(this.primeExponents[i] ?? ZERO).equals(
+          other.primeExponents[i] ?? ZERO,
+        )
+      ) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  toBigNumeratorDenominator() {
+    if (!this.isScalar()) {
+      throw new Error('Not scalar.');
+    }
+    let numerator = BigInt(this.residual.s * this.residual.n);
+    let denominator = BigInt(this.residual.d);
+    for (let i = 0; i < this.primeExponents.length; ++i) {
+      const exponent = this.primeExponents[i];
+      if (exponent.d !== 1) {
+        throw new Error('Not rational.');
+      }
+      const prime = BigInt(PRIMES[i]);
+      if (exponent.s > 0) {
+        numerator *= prime ** BigInt(exponent.n);
+      } else if (exponent.s < 0) {
+        denominator *= prime ** BigInt(exponent.n);
+      }
+    }
+    return {numerator, denominator};
+  }
+
+  isIntegral() {
+    try {
+      const {denominator} = this.toBigNumeratorDenominator();
+      return denominator === 1n;
+    } catch {
+      return false;
+    }
+  }
+
+  toBigInteger() {
+    const {numerator, denominator} = this.toBigNumeratorDenominator();
+    if (denominator !== 1n) {
+      throw new Error('Not integer.');
+    }
+    return numerator;
+  }
+
+  valueOf() {
+    const {numerator, denominator} = this.toBigNumeratorDenominator();
+    return Number(numerator) / Number(denominator);
+  }
+  totalCents(ignoreSign = false) {
+    if (!this.isScalar()) {
+      throw new Error('Not scalar.');
+    }
+    let total = valueToCents(this.residual.valueOf());
+    for (
+      let i = 0;
+      i < this.primeExponents.length && i < PRIME_CENTS.length;
+      ++i
+    ) {
+      total += this.primeExponents[i].valueOf() * PRIME_CENTS[i];
+    }
+    return ignoreSign ? Math.abs(total) : total;
+  }
+
+  toString(domain: 'linear' | 'logarithmic' = 'linear') {
+    if (domain === 'linear' && this.isScalar()) {
+      try {
+        const {numerator, denominator} = this.toBigNumeratorDenominator();
+        if (denominator === 1n) {
+          return numerator.toString();
+        }
+        return `${numerator}/${denominator}`;
+      } catch {
+        // Fall through
+      }
+    }
+    if (
+      domain === 'logarithmic' &&
+      this.isScalar() &&
+      this.residual.equals(new Fraction(1)) &&
+      this.primeExponents.length > 0 &&
+      this.primeExponents[0].n
+    ) {
+      const exponent = this.primeExponents[0];
+      return `${exponent.s * exponent.n}\\${exponent.d}`;
+    }
+    return '[object Object]';
   }
 }
