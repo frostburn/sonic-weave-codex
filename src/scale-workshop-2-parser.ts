@@ -2,11 +2,12 @@ import {
   Fraction,
   PRIMES,
   PRIME_CENTS,
+  centsToValue,
   dot,
   gcd,
   valueToCents,
 } from 'xen-dev-utils';
-import {Domain, TimeMonzo, TimeReal, getNumberOfComponents} from './monzo.js';
+import {TimeMonzo, getNumberOfComponents} from './monzo.js';
 import * as scaleWorkshop2Parser from './scale-workshop-2-ast.js';
 import {Interval} from './interval.js';
 import {
@@ -124,12 +125,15 @@ function parseCents(sw2Node: SW2CentsLiteral, numberOfComponents: number) {
   const factor = gcd(numerator, denominator);
   numerator = Number(numerator / factor);
   denominator = Number(denominator / factor);
-  let value: TimeMonzo | TimeReal;
+  let value: TimeMonzo;
   try {
     value = new TimeMonzo(ZERO, [new Fraction(numerator, denominator)]);
     value.numberOfComponents = numberOfComponents;
   } catch {
-    value = TimeReal.fromCents((1200 * numerator) / denominator);
+    const real = Interval.fromValue(
+      centsToValue((1200 * numerator) / denominator),
+    );
+    return new Interval(real.value, 'logarithmic', 0, node);
   }
   return new Interval(value, 'logarithmic', 0, node);
 }
@@ -243,8 +247,8 @@ function evaluateAst(ast: Expression, numberOfComponents: number): Interval {
       }
     }
     if (cents) {
-      return new Interval(
-        TimeReal.fromCents(
+      const real = Interval.fromValue(
+        centsToValue(
           dot(
             PRIME_CENTS,
             components.map(f => f.valueOf()),
@@ -252,8 +256,8 @@ function evaluateAst(ast: Expression, numberOfComponents: number): Interval {
             cents +
             valueToCents(residual.valueOf()),
         ),
-        'logarithmic',
       );
+      return new Interval(real.value, 'logarithmic');
     } else {
       return new Interval(
         new TimeMonzo(ZERO, components, residual),
@@ -272,7 +276,7 @@ function evaluateAst(ast: Expression, numberOfComponents: number): Interval {
   }
   const left = evaluateAst(ast.left, numberOfComponents);
   const right = evaluateAst(ast.right, numberOfComponents);
-  let domain: Domain = 'linear';
+  let domain: 'linear' | 'logarithmic' = 'linear';
   if (left.domain === 'logarithmic' || right.domain === 'logarithmic') {
     domain = 'logarithmic';
   }
