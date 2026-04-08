@@ -82,6 +82,22 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./parser": {
+      "types": "./dist/parser/index.d.ts",
+      "import": "./dist/parser/index.js"
+    },
+    "./runtime": {
+      "types": "./dist/runtime.d.ts",
+      "import": "./dist/runtime.js"
+    },
+    "./monzo": {
+      "types": "./dist/monzo.d.ts",
+      "import": "./dist/monzo.js"
+    },
+    "./scale-workshop2": {
+      "types": "./dist/scale-workshop2.d.ts",
+      "import": "./dist/scale-workshop2.js"
     }
   }
 }

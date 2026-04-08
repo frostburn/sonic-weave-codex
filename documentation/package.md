@@ -3,17 +3,30 @@
 This document describes the `sonic-weave` npm package and its main runtime types.
 
 # Table of Contents
-1. [Type reference](#type-reference)
-2. [Value types](#value-types)
+1. [Semver-stable entrypoints](#semver-stable-entrypoints)
+2. [Type reference](#type-reference)
+3. [Value types](#value-types)
     1. [Radical values](#radical-values)
     2. [Real values](#real-values)
     3. [Full examples](#full-examples)
-3. [Interval type](#interval-type)
-4. [Basis type](#basis-type)
-5. [Val type](#val-type)
-6. [Embedding SonicWeave](#embedding-sonicweave)
+4. [Interval type](#interval-type)
+5. [Basis type](#basis-type)
+6. [Val type](#val-type)
+7. [Embedding SonicWeave](#embedding-sonicweave)
     1. [Parsing](#parsing)
     2. [Execution](#execution)
+
+## Semver-stable entrypoints
+
+The following package subpaths are supported public APIs and are considered semver-stable entrypoints:
+
+- `sonic-weave` → aggregate API for the package root.
+- `sonic-weave/parser` → parser-related APIs exported from `src/parser/index.ts`.
+- `sonic-weave/runtime` → SonicWeave runtime value and helper APIs exported via `src/runtime.ts`.
+- `sonic-weave/monzo` → monzo and time-value APIs exported from `src/monzo.ts`.
+- `sonic-weave/scale-workshop2` → Scale Workshop 2 line parser APIs exported via `src/scale-workshop2.ts`.
+
+These subpaths are preferred over reaching into internal file paths because they are versioned as part of the public package contract and work better with modern bundlers (including Vite) for chunking and dependency graph analysis.
 
 ## Type reference
 
