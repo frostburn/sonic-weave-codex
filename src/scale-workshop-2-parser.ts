@@ -7,7 +7,8 @@ import {
   gcd,
   valueToCents,
 } from 'xen-dev-utils';
-import {TimeMonzo, getNumberOfComponents} from './monzo.js';
+import {TimeMonzo} from './monzo.js';
+import {getNumberOfComponents} from './monzo-config.js';
 import * as scaleWorkshop2Parser from './scale-workshop-2-ast.js';
 import {Interval} from './interval.js';
 import {

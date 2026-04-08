@@ -24,12 +24,12 @@ import {
   FRACTION_PRIMES,
   HALF,
   NEGATIVE_ONE,
-  NUM_INTERCHANGE_COMPONENTS,
   ONE,
   TWO,
   ZERO,
   validateBigInt,
 } from './utils.js';
+import {getNumberOfComponents} from './monzo-config.js';
 import {
   NedjiLiteral,
   FractionLiteral,
@@ -52,28 +52,12 @@ import {
  */
 export type Domain = 'linear' | 'logarithmic' | 'cologarithmic';
 
+export {setNumberOfComponents, getNumberOfComponents} from './monzo-config.js';
+
 export type EqualTemperament = {
   fractionOfEquave: Fraction;
   equave: Fraction;
 };
-
-let NUMBER_OF_COMPONENTS = NUM_INTERCHANGE_COMPONENTS; // Primes 2, 3, 5, 7, 11, 13, 17, 19 and 23
-
-/**
- * Set the default number of components in the vector part of time monzos.
- * @param n New default length of the vector part.
- */
-export function setNumberOfComponents(n: number) {
-  NUMBER_OF_COMPONENTS = n;
-}
-
-/**
- * Get the default number of components in the vector part of extended monzos.
- * @returns The default length of the vector part.
- */
-export function getNumberOfComponents() {
-  return NUMBER_OF_COMPONENTS;
-}
 
 /**
  * Check if two fractional monzos are equal.
@@ -1129,7 +1113,7 @@ export class TimeMonzo {
   static fromFraction(fraction: FractionValue, numberOfComponents?: number) {
     const [vector, residual] = toMonzoAndResidual(
       fraction,
-      numberOfComponents ?? NUMBER_OF_COMPONENTS,
+      numberOfComponents ?? getNumberOfComponents(),
     );
     return new TimeMonzo(
       new Fraction(0),
@@ -1156,7 +1140,7 @@ export class TimeMonzo {
     if (numberOfComponents === undefined) {
       numberOfComponents = Math.max(
         primeLimit(equave, true),
-        NUMBER_OF_COMPONENTS,
+        getNumberOfComponents(),
       );
     } else if (primeLimit(equave, true) > numberOfComponents) {
       throw new Error(`Not enough components to represent equave ${equave}.`);
@@ -1199,7 +1183,7 @@ export class TimeMonzo {
   static fromBigInt(value: bigint, numberOfComponents?: number) {
     const [vector, residual] = toMonzoAndResidual(
       value,
-      numberOfComponents ?? NUMBER_OF_COMPONENTS,
+      numberOfComponents ?? getNumberOfComponents(),
     );
     const intResidual = Number(residual);
     if (Math.abs(intResidual) > Number.MAX_SAFE_INTEGER) {
@@ -1227,7 +1211,7 @@ export class TimeMonzo {
     if (denominator === 0n) {
       throw new Error('Division by zero.');
     }
-    numberOfComponents ??= NUMBER_OF_COMPONENTS;
+    numberOfComponents ??= getNumberOfComponents();
     const [positiveVector, numeratorResidual] = toMonzoAndResidual(
       numerator,
       numberOfComponents,
@@ -1257,7 +1241,7 @@ export class TimeMonzo {
     cents: FractionValue,
     numberOfComponents?: number,
   ) {
-    numberOfComponents ??= NUMBER_OF_COMPONENTS;
+    numberOfComponents ??= getNumberOfComponents();
     if (numberOfComponents < 1) {
       throw new Error('Too few components to represent cents.');
     }
