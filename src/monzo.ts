@@ -30,6 +30,7 @@ import {
   validateBigInt,
 } from './utils.js';
 import {getNumberOfComponents} from './monzo-config.js';
+import {Stage1TimeMonzo, Stage1TimeReal} from './monzo-stage1.js';
 import {
   NedjiLiteral,
   FractionLiteral,
@@ -151,7 +152,7 @@ function intDot(a: number, b: number) {
  *
  * Used to represent irrational frequencies and values like pi.
  */
-export class TimeReal {
+export class TimeReal extends Stage1TimeReal {
   timeExponent: number;
   value: number;
 
@@ -169,6 +170,7 @@ export class TimeReal {
     if (!isFinite(timeExponent)) {
       throw new Error('Time exponent must be finite.');
     }
+    super(timeExponent, value);
     this.timeExponent = timeExponent;
     this.value = value;
   }
@@ -1075,7 +1077,7 @@ export class TimeReal {
  *
  * Used to represent the value of musical objects like 432Hz, 5/3 or 7\12 (N-of-EDO).
  */
-export class TimeMonzo {
+export class TimeMonzo extends Stage1TimeMonzo {
   timeExponent: Fraction;
   primeExponents: FractionalMonzo;
   residual: Fraction;
@@ -1099,6 +1101,7 @@ export class TimeMonzo {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       primeExponents = primeExponents.map(_ => new Fraction(0));
     }
+    super(timeExponent, [...primeExponents], residual);
     this.timeExponent = timeExponent;
     this.primeExponents = primeExponents;
     this.residual = residual;
