@@ -1,6 +1,6 @@
 import {describe, it, expect} from 'vitest';
 
-import {parseScaleWorkshop2Line} from '../scale-workshop-2-parser.js';
+import {parseScaleWorkshop2Line} from '../scale-workshop2.js';
 import {TimeMonzo} from '../monzo.js';
 import {Fraction} from 'xen-dev-utils';
 import {Interval} from '../interval.js';

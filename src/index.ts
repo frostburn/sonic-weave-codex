@@ -28,5 +28,5 @@ export {
   hasOwn,
 } from './utils.js';
 export * from './words.js';
-export * from './scale-workshop-2-parser.js';
+export * from './scale-workshop2.js';
 export * from './temper.js';

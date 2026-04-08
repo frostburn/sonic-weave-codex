@@ -7,10 +7,9 @@ import {
   gcd,
   valueToCents,
 } from 'xen-dev-utils';
-import {Stage1TimeMonzo} from './monzo-stage1.js';
+import {Stage1TimeMonzo, Stage1TimeReal} from './monzo-stage1.js';
 import {getNumberOfComponents} from './monzo-config.js';
 import * as scaleWorkshop2Parser from './scale-workshop-2-ast.js';
-import {Interval} from './interval.js';
 import {
   CentsLiteral,
   DecimalLiteral,
@@ -79,13 +78,22 @@ type Expression =
   | UnaryExpression
   | BinaryExpression;
 
+export type Stage1ScaleWorkshop2Line = {
+  value: Stage1TimeMonzo | Stage1TimeReal;
+  domain: 'linear' | 'logarithmic';
+  node?: any;
+};
+
 function parseAst(input: string): Expression {
   return (scaleWorkshop2Parser as {parse: (input: string) => Expression}).parse(
     input,
   );
 }
 
-function parseDecimal(sw2Node: NumericLiteral, numberOfComponents: number) {
+function parseDecimal(
+  sw2Node: NumericLiteral,
+  numberOfComponents: number,
+): Stage1ScaleWorkshop2Line {
   const node: DecimalLiteral = {
     type: 'DecimalLiteral',
     sign: '',
@@ -105,10 +113,13 @@ function parseDecimal(sw2Node: NumericLiteral, numberOfComponents: number) {
     denominator,
     numberOfComponents,
   );
-  return new Interval(value as any, 'linear', 0, node);
+  return {value, domain: 'linear', node};
 }
 
-function parseCents(sw2Node: SW2CentsLiteral, numberOfComponents: number) {
+function parseCents(
+  sw2Node: SW2CentsLiteral,
+  numberOfComponents: number,
+): Stage1ScaleWorkshop2Line {
   const node: CentsLiteral = {
     type: 'CentsLiteral',
     sign: '',
@@ -134,12 +145,15 @@ function parseCents(sw2Node: SW2CentsLiteral, numberOfComponents: number) {
     }
     value = new Stage1TimeMonzo(ZERO, components);
   } catch {
-    const real = Interval.fromValue(
-      centsToValue((1200 * numerator) / denominator),
-    );
-    return new Interval(real.value, 'logarithmic', 0, node);
+    return {
+      value: Stage1TimeReal.fromValue(
+        centsToValue((1200 * numerator) / denominator),
+      ),
+      domain: 'logarithmic',
+      node,
+    };
   }
-  return new Interval(value as any, 'logarithmic', 0, node);
+  return {value, domain: 'logarithmic', node};
 }
 
 /**
@@ -151,12 +165,12 @@ function parseCents(sw2Node: SW2CentsLiteral, numberOfComponents: number) {
  * @returns {@link Interval} instance constructed from the input string.
  * @throws An error if the input cannot be interpreted as a supported Scale Workshop 2 interval line.
  */
-export function parseScaleWorkshop2Line(
+export function parseScaleWorkshop2Stage1Line(
   input: string,
   numberOfComponents?: number,
   admitBareNumbers = false,
   universalMinus = true,
-): Interval {
+): Stage1ScaleWorkshop2Line {
   const ast = parseAst(input);
   if (!universalMinus && ast.type === 'UnaryExpression') {
     if (ast.operand.type !== 'CentsLiteral') {
@@ -174,37 +188,38 @@ export function parseScaleWorkshop2Line(
   return evaluateAst(ast, numberOfComponents);
 }
 
-function evaluateAst(ast: Expression, numberOfComponents: number): Interval {
+function evaluateAst(
+  ast: Expression,
+  numberOfComponents: number,
+): Stage1ScaleWorkshop2Line {
   switch (ast.type) {
     case 'PlainLiteral':
-      return new Interval(
-        Stage1TimeMonzo.fromBigInt(ast.value, numberOfComponents) as any,
-        'linear',
-        0,
-        {
+      return {
+        value: Stage1TimeMonzo.fromBigInt(ast.value, numberOfComponents),
+        domain: 'linear',
+        node: {
           type: 'IntegerLiteral',
           value: ast.value,
         },
-      );
+      };
     case 'CentsLiteral':
       return parseCents(ast, numberOfComponents);
     case 'NumericLiteral':
       return parseDecimal(ast, numberOfComponents);
     case 'FractionLiteral':
-      return new Interval(
-        Stage1TimeMonzo.fromBigNumeratorDenominator(
+      return {
+        value: Stage1TimeMonzo.fromBigNumeratorDenominator(
           ast.numerator,
           ast.denominator,
           numberOfComponents,
-        ) as any,
-        'linear',
-        0,
-        {
+        ),
+        domain: 'linear',
+        node: {
           type: 'FractionLiteral',
           numerator: ast.numerator,
           denominator: ast.denominator,
         },
-      );
+      };
   }
   if (ast.type === 'EdjiFraction') {
     const node: NedjiLiteral = {
@@ -224,16 +239,15 @@ function evaluateAst(ast: Expression, numberOfComponents: number): Interval {
       node.equaveDenominator = Number(ast.equave.denominator);
       equave = new Fraction(node.equaveNumerator, node.equaveDenominator);
     }
-    return new Interval(
-      Stage1TimeMonzo.fromEqualTemperament(
+    return {
+      value: Stage1TimeMonzo.fromEqualTemperament(
         fractionOfEquave,
         equave,
         numberOfComponents,
-      ) as any,
-      'logarithmic',
-      0,
+      ),
+      domain: 'logarithmic',
       node,
-    );
+    };
   } else if (ast.type === 'Monzo') {
     const components = ast.components.map(c => new Fraction(c));
     while (components.length < numberOfComponents) {
@@ -251,32 +265,32 @@ function evaluateAst(ast: Expression, numberOfComponents: number): Interval {
       }
     }
     if (cents) {
-      const real = Interval.fromValue(
-        centsToValue(
-          dot(
-            PRIME_CENTS,
-            components.map(f => f.valueOf()),
-          ) +
-            cents +
-            valueToCents(residual.valueOf()),
+      return {
+        value: Stage1TimeReal.fromValue(
+          centsToValue(
+            dot(
+              PRIME_CENTS,
+              components.map(f => f.valueOf()),
+            ) +
+              cents +
+              valueToCents(residual.valueOf()),
+          ),
         ),
-      );
-      return new Interval(real.value, 'logarithmic');
+        domain: 'logarithmic',
+      };
     } else {
-      return new Interval(
-        new Stage1TimeMonzo(ZERO, components, residual) as any,
-        'logarithmic',
-      );
+      return {
+        value: new Stage1TimeMonzo(ZERO, components, residual),
+        domain: 'logarithmic',
+      };
     }
   } else if (ast.type === 'UnaryExpression') {
     const operand = evaluateAst(ast.operand, numberOfComponents);
-    return new Interval(
-      operand.value.inverse(),
-      operand.domain,
-      0,
-      uniformInvertNode(operand.node),
-      operand,
-    );
+    return {
+      value: operand.value.inverse(),
+      domain: operand.domain,
+      node: uniformInvertNode(operand.node as any),
+    };
   }
   const left = evaluateAst(ast.left, numberOfComponents);
   const right = evaluateAst(ast.right, numberOfComponents);
@@ -285,7 +299,7 @@ function evaluateAst(ast: Expression, numberOfComponents: number): Interval {
     domain = 'logarithmic';
   }
   if (ast.operator === '+') {
-    return new Interval(left.value.mul(right.value), domain);
+    return {value: left.value.mul(right.value), domain};
   }
-  return new Interval(left.value.div(right.value), domain);
+  return {value: left.value.div(right.value), domain};
 }
