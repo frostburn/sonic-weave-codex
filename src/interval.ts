@@ -340,8 +340,8 @@ export class Interval {
   }
 
   /**
-   * Clone this {@link Interval} instance without deeply copying unknown of the parts.
-   * @returns An interval like this one but replacing unknown of the parts won't change the original.
+   * Clone this {@link Interval} instance without deeply copying any of the parts.
+   * @returns An interval like this one but replacing any of the parts won't change the original.
    */
   shallowClone(): Interval {
     return new Interval(this.value, this.domain, this.steps, this.node, this);

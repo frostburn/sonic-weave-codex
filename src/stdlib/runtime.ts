@@ -178,7 +178,7 @@ export function builtinNode(
 }
 
 /**
- * Throw an error if unknown of the parameters passed in has an `undefined` value.
+ * Throw an error if any of the parameters passed in has an `undefined` value.
  * @param parameters A record of parameters to make mandatory.
  * @returns Nothing.
  * @throws An error naming the first missing parameter.
