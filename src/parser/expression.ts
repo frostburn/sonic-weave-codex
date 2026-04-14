@@ -50,12 +50,7 @@ import {
   binaryBroadcast,
   ternaryBroadcast,
 } from '../stdlib/index.js';
-import {
-  ZERO,
-  ONE,
-  NEGATIVE_ONE,
-  F,
-} from '../utils.js';
+import {ZERO, ONE, NEGATIVE_ONE, F} from '../utils.js';
 import {
   metricExponent,
   binaryExponent,
