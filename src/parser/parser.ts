@@ -177,7 +177,6 @@ function convert(value: unknown): SonicWeaveValue {
   switch (typeof value) {
     case 'string':
     case 'undefined':
-    case 'function':
     case 'boolean':
       return value;
     case 'number':
@@ -205,10 +204,11 @@ function convert(value: unknown): SonicWeaveValue {
       } else if (Array.isArray(value)) {
         return value.map(convert) as Interval[];
       } else {
+        const record = value as Record<string, unknown>;
         const result: Record<string, SonicWeavePrimitive> = {};
-        for (const key in value) {
-          if (hasOwn(value, key)) {
-            result[key] = convert(value[key]) as SonicWeavePrimitive;
+        for (const key in record) {
+          if (hasOwn(record, key)) {
+            result[key] = convert(record[key]) as SonicWeavePrimitive;
           }
         }
         return result;

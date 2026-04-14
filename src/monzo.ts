@@ -231,12 +231,15 @@ export class TimeReal {
    * @returns Deserialized {@link TimeReal} instance or other data without modifications.
    */
   static reviver(key: string, value: unknown) {
+    type SerializedTimeReal = {type: 'TimeReal'; t: number; v: number | string};
     if (
       typeof value === 'object' &&
       value !== null &&
+      'type' in value &&
       value.type === 'TimeReal'
     ) {
-      let v: number | string = value.v;
+      const serialized = value as SerializedTimeReal;
+      let v: number | string = serialized.v;
       if (v === 'nan') {
         v = NaN;
       } else if (v === 'inf') {
@@ -244,7 +247,7 @@ export class TimeReal {
       } else if (v === '-inf') {
         v = -Infinity;
       }
-      return new TimeReal(value.t, v as number);
+      return new TimeReal(serialized.t, v as number);
     }
     return value;
   }
@@ -1308,17 +1311,25 @@ export class TimeMonzo {
    * @returns Deserialized {@link TimeMonzo} instance or other data without modifications.
    */
   static reviver(key: string, value: unknown) {
+    type SerializedTimeMonzo = {
+      type: 'TimeMonzo';
+      t: unknown;
+      p: number[];
+      r: unknown;
+    };
     if (
       typeof value === 'object' &&
       value !== null &&
+      'type' in value &&
       value.type === 'TimeMonzo'
     ) {
-      const timeExponent = Fraction.reviver('t', value.t) as Fraction;
+      const serialized = value as SerializedTimeMonzo;
+      const timeExponent = Fraction.reviver('t', serialized.t) as Fraction;
       const primeExponents: Fraction[] = [];
-      for (let i = 0; i < value.p.length; i += 2) {
-        primeExponents.push(new Fraction(value.p[i], value.p[i + 1]));
+      for (let i = 0; i < serialized.p.length; i += 2) {
+        primeExponents.push(new Fraction(serialized.p[i], serialized.p[i + 1]));
       }
-      const residual = Fraction.reviver('r', value.r) as Fraction;
+      const residual = Fraction.reviver('r', serialized.r) as Fraction;
       return new TimeMonzo(timeExponent, primeExponents, residual);
     }
     return value;
@@ -2657,9 +2668,10 @@ export class TimeMonzo {
     if (this.timeExponent.n) {
       throw new Error('Time exponent prevents factorization over integers.');
     }
-    const result: Map<number, Fraction> = primeFactorize(
-      this.residual,
-    ) as unknown;
+    const result = primeFactorize(this.residual) as unknown as Map<
+      number,
+      Fraction
+    >;
     for (const [key, value] of result) {
       result.set(key, new Fraction(value));
     }
@@ -3070,9 +3082,9 @@ export function reviveMonzo(
   data: ReturnType<TimeReal['toJSON']> | ReturnType<TimeMonzo['toJSON']>,
 ): TimeReal | TimeMonzo {
   if (data.type === 'TimeReal') {
-    return TimeReal.reviver('value', data);
+    return TimeReal.reviver('value', data) as TimeReal;
   } else if (data.type === 'TimeMonzo') {
-    return TimeMonzo.reviver('value', data);
+    return TimeMonzo.reviver('value', data) as TimeMonzo;
   }
   throw new Error(`Unrecognized monzo type '${data.type}'`);
 }

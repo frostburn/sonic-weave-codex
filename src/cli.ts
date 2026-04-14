@@ -154,6 +154,7 @@ export function repl(start: (options?: string | ReplOptions) => REPLServer) {
   const visitor = new StatementVisitor(globalVisitor);
 
   let currentCmd = '';
+  type ParenCounts = {parens: number; squares: number; curlies: number};
 
   function evaluateStatement(
     this: REPLServer,
@@ -164,9 +165,9 @@ export function repl(start: (options?: string | ReplOptions) => REPLServer) {
   ) {
     currentCmd += evalCmd;
 
-    let counts: unknown;
+    let counts: ParenCounts;
     try {
-      counts = parenCounter(currentCmd);
+      counts = parenCounter(currentCmd) as ParenCounts;
     } catch (e) {
       currentCmd = '';
       if (e instanceof Error) {
@@ -176,7 +177,7 @@ export function repl(start: (options?: string | ReplOptions) => REPLServer) {
           cb(e, undefined);
         }
       } else {
-        cb(new Error(repr.bind(visitor.rootContext)(e as unknown)), undefined);
+        cb(new Error(repr.bind(visitor.rootContext)(e as never)), undefined);
       }
       return;
     }
@@ -234,7 +235,7 @@ export function repl(start: (options?: string | ReplOptions) => REPLServer) {
       let err =
         thrown instanceof Error
           ? thrown
-          : new Error(repr.bind(visitor.rootContext)(thrown as unknown));
+          : new Error(repr.bind(visitor.rootContext)(thrown as never));
       if (err.name === 'SyntaxError') {
         err = new Error(err.message);
       }

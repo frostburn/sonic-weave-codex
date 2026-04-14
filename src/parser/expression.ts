@@ -663,9 +663,11 @@ export class ExpressionVisitor {
       return sonicTruth(test) ? consequent : alternate;
     }
     return where(
-      this.visit(node.test) as unknown,
-      this.visit(node.consequent) as unknown,
-      this.visit(node.alternate) as unknown,
+      this.visit(node.test) as SonicWeavePrimitive | SonicWeavePrimitive[],
+      this.visit(node.consequent) as
+        | SonicWeavePrimitive
+        | SonicWeavePrimitive[],
+      this.visit(node.alternate) as SonicWeavePrimitive | SonicWeavePrimitive[],
     );
   }
 
@@ -709,9 +711,9 @@ export class ExpressionVisitor {
       }
     }
     return rr(
-      this.visit(node.left) as unknown,
-      this.visit(node.middle) as unknown,
-      this.visit(node.right) as unknown,
+      this.visit(node.left) as SonicWeavePrimitive | SonicWeavePrimitive[],
+      this.visit(node.middle) as SonicWeavePrimitive | SonicWeavePrimitive[],
+      this.visit(node.right) as SonicWeavePrimitive | SonicWeavePrimitive[],
     );
   }
 
@@ -1823,15 +1825,30 @@ export class ExpressionVisitor {
         // eslint-disable-next-line eqeqeq
         return left != right;
       case '<=':
-        return (left as unknown) <= (right as unknown);
+        return (
+          (left as number | string | bigint) <=
+          (right as number | string | bigint)
+        );
       case '<':
-        return (left as unknown) < (right as unknown);
+        return (
+          (left as number | string | bigint) <
+          (right as number | string | bigint)
+        );
       case '>=':
-        return (left as unknown) >= (right as unknown);
+        return (
+          (left as number | string | bigint) >=
+          (right as number | string | bigint)
+        );
       case '>':
-        return (left as unknown) > (right as unknown);
+        return (
+          (left as number | string | bigint) >
+          (right as number | string | bigint)
+        );
       case 'al~':
-        return (left as unknown) ?? (right as unknown);
+        return (
+          (left as SonicWeaveValue | null | undefined) ??
+          (right as SonicWeaveValue)
+        );
     }
     throw new Error(`Unsupported binary operation '${operator}'.`);
   }

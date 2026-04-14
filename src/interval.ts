@@ -303,20 +303,32 @@ export class Interval {
    * @returns Deserialized {@link Interval} instance or other data without modifications.
    */
   static reviver(key: string, value: unknown) {
+    type SerializedInterval = {
+      type: 'Interval';
+      v: unknown;
+      d: number;
+      s: number;
+      n: unknown;
+      l: string;
+      c: string | null;
+      t: number[];
+    };
     if (
       typeof value === 'object' &&
       value !== null &&
+      'type' in value &&
       value.type === 'Interval'
     ) {
+      const serialized = value as SerializedInterval;
       const result = new Interval(
-        reviveMonzo(value.v),
-        value.d ? 'logarithmic' : 'linear',
-        value.s,
-        intervalLiteralFromJSON(value.n),
+        reviveMonzo(serialized.v as Parameters<typeof reviveMonzo>[0]),
+        serialized.d ? 'logarithmic' : 'linear',
+        serialized.s,
+        intervalLiteralFromJSON(serialized.n),
       );
-      result.label = value.l;
-      result.color = value.c && new Color(value.c);
-      result.trackingIds = new Set(value.t);
+      result.label = serialized.l;
+      result.color = serialized.c ? new Color(serialized.c) : undefined;
+      result.trackingIds = new Set(serialized.t);
       return result;
     }
     return value;

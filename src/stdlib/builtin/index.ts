@@ -304,7 +304,7 @@ function simplify(
   if (isArrayOrRecord(interval)) {
     return unaryBroadcast.bind(this)(interval, simplify.bind(this));
   }
-  return pubSimplify(interval as unknown);
+  return pubSimplify(interval as Interval | boolean);
 }
 simplify.__doc__ =
   'Get rid of interval formatting. Simplifies a ratio to lowest terms.';
@@ -2284,7 +2284,7 @@ function some(
   }
   this.spendGas(array.length);
   if (!test) {
-    return array.some(sonicTruth);
+    return array.some(v => sonicTruth(v as SonicWeaveValue));
   }
   return array.some((v, i, arr) => test(v, fromInteger(i), arr));
 }
@@ -2302,7 +2302,7 @@ function every(
   }
   this.spendGas(array.length);
   if (!test) {
-    return array.every(sonicTruth);
+    return array.every(v => sonicTruth(v as SonicWeaveValue));
   }
   return array.every((v, i, arr) => test(v, fromInteger(i), arr));
 }
@@ -2387,14 +2387,18 @@ lstr.__node__ = builtinNode(lstr);
 
 function print(this: ExpressionVisitor, ...args: unknown[]) {
   const s = repr.bind(this);
-  console.log(...args.map(a => (typeof a === 'string' ? a : s(a))));
+  console.log(
+    ...args.map(a => (typeof a === 'string' ? a : s(a as SonicWeaveValue))),
+  );
 }
 print.__doc__ = 'Print the arguments to the console.';
 print.__node__ = builtinNode(print);
 
 function warn(this: ExpressionVisitor, ...args: unknown[]) {
   const s = repr.bind(this);
-  console.log(...args.map(a => (typeof a === 'string' ? a : s(a))));
+  console.log(
+    ...args.map(a => (typeof a === 'string' ? a : s(a as SonicWeaveValue))),
+  );
 }
 warn.__doc__ = 'Print the arguments to the console with "warning" emphasis.';
 warn.__node__ = builtinNode(warn);
@@ -2488,7 +2492,8 @@ function centsColor(
 ): Color | Color[] {
   if (Array.isArray(interval)) {
     this.spendGas(interval.length);
-    return interval.map(centsColor as unknown);
+    const colorize = pubCentsColor.bind(this.rootContext);
+    return interval.map(i => colorize(upcastBool(i as SonicWeaveValue)));
   }
   return pubCentsColor.bind(this.rootContext)(upcastBool(interval));
 }
@@ -2502,7 +2507,8 @@ export function factorColor(
 ): Color | Color[] {
   if (Array.isArray(interval)) {
     this.spendGas(interval.length);
-    return interval.map(factorColor as unknown);
+    const colorize = pubFactorColor.bind(this.rootContext);
+    return interval.map(i => colorize(upcastBool(i as SonicWeaveValue)));
   }
   return pubFactorColor.bind(this.rootContext)(upcastBool(interval));
 }
