@@ -1128,8 +1128,7 @@ export class TimeMonzo {
     }
     if (!residual.n) {
       timeExponent = new Fraction(0);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      primeExponents = primeExponents.map(_ => new Fraction(0));
+      primeExponents = primeExponents.map(() => new Fraction(0));
     }
     this.timeExponent = timeExponent;
     this.primeExponents = primeExponents;

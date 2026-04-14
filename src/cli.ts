@@ -230,14 +230,11 @@ export function repl(start: (options?: string | ReplOptions) => REPLServer) {
       }
     } catch (e) {
       currentCmd = '';
-      if (typeof e === 'string') {
-        // eslint-disable-next-line no-ex-assign
-        e = new Error(e);
-      }
+      const thrown = typeof e === 'string' ? new Error(e) : e;
       let err =
-        e instanceof Error
-          ? e
-          : new Error(repr.bind(visitor.rootContext)(e as unknown));
+        thrown instanceof Error
+          ? thrown
+          : new Error(repr.bind(visitor.rootContext)(thrown as unknown));
       if (err.name === 'SyntaxError') {
         err = new Error(err.message);
       }

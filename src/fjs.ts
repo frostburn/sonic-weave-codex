@@ -66,8 +66,7 @@ function masterAlgorithm(
 }
 
 // The original NFJS master algorithm by M-yac
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function myacNeutralMaster(primeCents: number) {
+function _myacNeutralMaster(primeCents: number) {
   let pythagoras = 0;
   if (circleDistance(primeCents, pythagoras) < NFJS_RADIUS) {
     return 0;
