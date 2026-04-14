@@ -3,7 +3,11 @@ import {Color, Interval, Temperament, Val, ValBasis} from '../interval.js';
 import {TimeMonzo} from '../monzo.js';
 import * as sonicWeaveAstParser from './sonic-weave-ast.js';
 import {CSS_COLOR_CONTEXT} from '../css-colors.js';
-import {SonicWeaveValue, SonicWeavePrimitive} from '../stdlib/index.js';
+import {
+  SonicWeaveValue,
+  SonicWeavePrimitive,
+  SonicWeaveFunction,
+} from '../stdlib/index.js';
 import {BUILTIN_CONTEXT} from '../stdlib/builtin/index.js';
 import {PRELUDE_SOURCE, PRELUDE_VOLATILES} from '../stdlib/prelude.js';
 import {RootContext} from '../context.js';
@@ -179,6 +183,11 @@ function convert(value: unknown): SonicWeaveValue {
     case 'undefined':
     case 'boolean':
       return value;
+    case 'function':
+      if ('__doc__' in value && '__node__' in value) {
+        return value as SonicWeaveFunction;
+      }
+      throw new Error('Template functions must conform to SonicWeaveFunction.');
     case 'number':
       if (Number.isInteger(value)) {
         return Interval.fromInteger(value);
