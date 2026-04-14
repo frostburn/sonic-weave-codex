@@ -95,6 +95,37 @@ function tokenize(source: string) {
   return {tokens, gaps};
 }
 
+function stripDocstrings(tokens: Token[], gaps: Gap[]) {
+  const skip = new Set<number>();
+  for (let i = 1; i + 1 < tokens.length; ++i) {
+    if (tokens[i].type !== 'string') {
+      continue;
+    }
+    if (tokens[i + 1].type !== 'symbol' || tokens[i + 1].value !== ';') {
+      continue;
+    }
+    if (tokens[i - 1].type === 'symbol' && tokens[i - 1].value === '{') {
+      skip.add(i);
+      skip.add(i + 1);
+    }
+  }
+
+  if (!skip.size) {
+    return {tokens, gaps};
+  }
+
+  const strippedTokens: Token[] = [];
+  const strippedGaps: Gap[] = [];
+  for (let i = 0; i < tokens.length; ++i) {
+    if (skip.has(i)) {
+      continue;
+    }
+    strippedTokens.push(tokens[i]);
+    strippedGaps.push(gaps[i]);
+  }
+  return {tokens: strippedTokens, gaps: strippedGaps};
+}
+
 function canTouch(prev: Token, next: Token) {
   if (prev.type === 'symbol' && '([{,;'.includes(prev.value)) {
     return true;
@@ -137,7 +168,8 @@ function separator(prev: Token, next: Token, gap: Gap) {
  * Minify SonicWeave prelude source while preserving semantics.
  */
 export function minifyPrelude(source: string) {
-  const {tokens, gaps} = tokenize(source);
+  const tokenized = tokenize(source);
+  const {tokens, gaps} = stripDocstrings(tokenized.tokens, tokenized.gaps);
   if (!tokens.length) {
     return '';
   }
