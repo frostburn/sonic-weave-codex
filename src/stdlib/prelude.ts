@@ -1,4 +1,4 @@
-export const PRELUDE_VOLATILES = `
+export const PRELUDE_VOLATILES: string = `
 (* XXX: This is only here to bypass scope optimization so that Scale Workshop can hook warn(). *)
 riff reduce(scale = ££) {
   "Obtain a copy of the popped/given scale reduced by its equave. Issue a warning if the scale was already reduced.";
@@ -12,7 +12,7 @@ riff reduce(scale = ££) {
 }
 `;
 
-export const PRELUDE_SOURCE = `
+export const PRELUDE_SOURCE: string = `
 (** Root context dependents **)
 
 (**
