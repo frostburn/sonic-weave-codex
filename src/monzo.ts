@@ -2826,12 +2826,12 @@ export class TimeMonzo {
         if (denominator === node.denominator) {
           return {
             ...node,
-            numerator: (denominator / d) * n,
+            numerator: (denominator / d) * scaledNumerator,
           };
         }
         return {
           ...node,
-          numerator: n,
+          numerator: scaledNumerator,
           denominator: d,
         };
       } catch {

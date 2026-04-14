@@ -50,6 +50,19 @@ describe('Idempotent formatting', () => {
     expect(node.numerator).toBe(4);
     expect(node.denominator).toBe(12);
   });
+
+  it('has stable signed equal temperament against existing node', () => {
+    const downMajorThird = TimeMonzo.fromEqualTemperament('-4/12');
+    const node = intervalValueAs(downMajorThird, {
+      type: 'NedjiLiteral',
+      numerator: 4,
+      denominator: 12,
+      equaveNumerator: null,
+      equaveDenominator: null,
+    }) as NedjiLiteral;
+    expect(node.numerator).toBe(-4);
+    expect(node.denominator).toBe(12);
+  });
 });
 
 describe('Interchange format', () => {

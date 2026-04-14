@@ -94,7 +94,7 @@ export function parseBasis(input: string): ValBasis {
  * @param basis Dot-separated subgroup basis or the prime limit parsed by {@link parseBasis}.
  * @param includePrelude Whether or not to include the extended standard library. Passing in `false` results in a faster start-up time.
  * @returns An array of number arrays representing vals in the subgroup basis.
- * @throws An error if unknown entry cannot be interpreted as a val in the requested basis.
+ * @throws An error if any entry cannot be interpreted as a val in the requested basis.
  */
 export function parseVals(
   input: string,
