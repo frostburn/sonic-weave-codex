@@ -42,7 +42,7 @@
     "compile-paren-counter": "peggy --format es src/grammars/paren-counter.pegjs src/grammars/base.pegjs -o src/parser/paren-counter.js",
     "compile-parsers": "npm run compile-sonic-weave-parser && npm run compile-chord-parser && npm run compile-sw2-parser && npm run compile-paren-counter",
     "precompile": "npm run compile-parsers",
-    "compile": "tsc && node scripts/minify-prelude-dist.js",
+    "compile": "tsc && node scripts/minify-prelude-dist.cjs",
     "fix": "gts fix",
     "prepare": "npm run compile",
     "pretest": "npm run compile",
