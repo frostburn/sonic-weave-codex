@@ -80,13 +80,8 @@ export function toScalaKbm(source: string) {
   let referenceNote = 69;
   let referenceFrequency = 440.0;
   if (context?.unisonFrequency) {
-    const unison = context.unisonFrequency;
     referenceNote = 60;
-    if (unison.isFractional()) {
-      referenceFrequency = unison.toFraction().valueOf();
-    } else {
-      referenceFrequency = 2 ** (unison.totalCents() / 1200);
-    }
+    referenceFrequency = context.unisonFrequency.toHertz();
   }
 
   const frequencyString = Number.isInteger(referenceFrequency)

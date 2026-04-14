@@ -101,6 +101,13 @@ describe('Scala KBM format', () => {
       '\n60\n! Frequency to tune the above note to:\n432.0\n',
     );
   });
+
+  it('normalizes non-Hz absolute unison values to Hz', () => {
+    const result = toScalaKbm('1/1 = 2 s\n3/2\n2');
+    expect(result).toContain(
+      '\n60\n! Frequency to tune the above note to:\n0.5\n',
+    );
+  });
 });
 
 describe('CLI REPL error handling', () => {
