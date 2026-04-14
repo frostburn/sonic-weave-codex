@@ -15,19 +15,30 @@ function tokenize(source) {
     const next = source[i + 1];
 
     if (/\s/u.test(char)) {
+      let value = char;
       i += 1;
+      while (i < source.length && /\s/u.test(source[i])) {
+        value += source[i];
+        i += 1;
+      }
+      tokens.push({type: 'whitespace', value});
       continue;
     }
 
     if (char === '(' && next === '*') {
       i += 2;
+      let newlines = '';
       while (
         i < source.length &&
         !(source[i] === '*' && source[i + 1] === ')')
       ) {
+        if (source[i] === '\n') {
+          newlines += '\n';
+        }
         i += 1;
       }
       i += 2;
+      tokens.push({type: 'whitespace', value: newlines || ' '});
       continue;
     }
 
@@ -74,44 +85,57 @@ function isWordLike(token) {
   return token.type === 'word' || token.type === 'string';
 }
 
-function shouldInsertSemicolon(prev, next) {
-  return prev.type === 'string' && next.type === 'word';
-}
-
-function needsSpace(prev, next) {
+function needsLexicalSpace(prev, next) {
   if (isWordLike(prev) && isWordLike(next)) {
     return true;
   }
-  if (prev.type === 'word' && next.value === '(') {
-    return false;
-  }
-  if (prev.value === ')' && next.type === 'word') {
-    return true;
+  if (next.type === 'word') {
+    return prev.value === ')' || prev.value === ']' || prev.value === '}';
   }
   return false;
+}
+
+function canMergeNewline(prev) {
+  return (
+    prev.value === ';' ||
+    prev.value === '{' ||
+    prev.value === '}' ||
+    prev.value === ','
+  );
 }
 
 function minifyPrelude(source) {
   const tokens = tokenize(source);
   let output = '';
+  let prev;
+  let pendingGap = '';
 
-  for (let i = 0; i < tokens.length; i += 1) {
-    const token = tokens[i];
-    if (!i) {
-      output += token.value;
+  for (const token of tokens) {
+    if (token.type === 'whitespace') {
+      pendingGap += token.value;
       continue;
     }
 
-    const prev = tokens[i - 1];
-    if (shouldInsertSemicolon(prev, token)) {
-      output += ';';
-    } else if (needsSpace(prev, token)) {
+    if (!prev) {
+      output += token.value;
+      prev = token;
+      pendingGap = '';
+      continue;
+    }
+
+    const hadNewline = pendingGap.includes('\n');
+    if (hadNewline && !canMergeNewline(prev)) {
+      output += '\n';
+    } else if (needsLexicalSpace(prev, token)) {
       output += ' ';
     }
+
     output += token.value;
+    prev = token;
+    pendingGap = '';
   }
 
-  return output;
+  return output.trim();
 }
 
 async function minifyDistPrelude() {
