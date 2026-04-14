@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   type ExportFunctionStatement,
   type ArrowFunction,
@@ -141,9 +142,9 @@ export function builtinNode(
     .map(p => ({type: 'Parameter', id: p, defaultValue: null}));
   for (const parameter of parameters) {
     if (parameter.id.includes('=')) {
-      let [id, defaultValue] = parameter.id.split('=');
-      parameter.id = id.trim();
-      defaultValue = defaultValue.trim().replace(/'/g, '"');
+      const [idPart, defaultValuePart] = parameter.id.split('=');
+      parameter.id = idPart.trim();
+      const defaultValue = defaultValuePart.trim().replace(/'/g, '"');
       if (defaultValue.includes('"')) {
         parameter.defaultValue = {
           type: 'StringLiteral',

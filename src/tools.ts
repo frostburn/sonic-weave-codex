@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /** Tools published as part of the package. */
 
 import {TimeMonzo} from './monzo.js';

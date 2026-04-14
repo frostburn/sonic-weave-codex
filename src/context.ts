@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {SonicWeaveValue} from './stdlib/index.js';
 import {Interval} from './interval.js';
 import {TimeMonzo} from './monzo.js';

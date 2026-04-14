@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Exported builtins without complications related to expression visitors or vectorization.
  */

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import {ABSURD_EXPONENT, validateBigInt} from './utils.js';
@@ -1122,11 +1123,11 @@ export function numberToDecimalLiteral(
   num: number | Fraction,
   flavor: NumericFlavor,
 ): DecimalLiteral {
-  let [wholeStr, fractional] = num.toString().split('.');
+  const [wholeStr, fractionalPart] = num.toString().split('.');
   let sign: Sign = '';
   let whole = BigInt(wholeStr);
   let exponent: number | null = null;
-  fractional ??= '';
+  const fractional = fractionalPart ?? '';
   if (whole < 0n) {
     sign = '-';
     whole = -whole;

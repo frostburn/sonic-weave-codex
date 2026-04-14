@@ -151,7 +151,8 @@ function toneSplitterMaster(primeCents: number): [number, number] {
 function* commaGenerator(master: typeof masterAlgorithm): Generator<TimeMonzo> {
   let i = 2;
   while (i < PRIME_CENTS.length) {
-    let [twos, threes] = master(PRIME_CENTS[i]);
+    const [initialTwos, threes] = master(PRIME_CENTS[i]);
+    let twos = initialTwos;
     let commaCents =
       PRIME_CENTS[i] + twos * PRIME_CENTS[0] + threes * PRIME_CENTS[1];
     while (commaCents > 600) {

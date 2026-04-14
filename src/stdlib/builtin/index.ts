@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {approximateRadical} from 'xen-dev-utils/approximation';
 import {kCombinations as xduKCombinations} from 'xen-dev-utils/combinations';
 import {
@@ -598,10 +599,10 @@ function nedji(
     );
   }
   if (typeof interval === 'string') {
-    let [fraction, equave] = interval.replace('ed', '<').split('<');
-    if (equave.endsWith('>')) {
-      equave = equave.slice(0, -1);
-    }
+    const [fraction, equavePart] = interval.replace('ed', '<').split('<');
+    const equave = equavePart.endsWith('>')
+      ? equavePart.slice(0, -1)
+      : equavePart;
     const monzo = TimeMonzo.fromEqualTemperament(
       fraction.replace('\\', '/'),
       equave,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {relative, repr} from './stdlib/index.js';
 import {Interval} from './interval.js';

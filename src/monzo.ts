@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {centsToValue, valueToCents} from 'xen-dev-utils/conversion';
 import {monzoToCents, sum} from 'xen-dev-utils/core';
 import {
@@ -2789,13 +2790,13 @@ export class TimeMonzo {
     if (this.isEqualTemperament()) {
       try {
         const {fractionOfEquave, equave} = this.toEqualTemperament();
-        let {s, n, d} = fractionOfEquave;
-        n *= s;
+        const {s, n, d} = fractionOfEquave;
+        const scaledNumerator = n * s;
         if (!node) {
           if (equave.equals(TWO)) {
             return {
               type: 'NedjiLiteral',
-              numerator: n,
+              numerator: scaledNumerator,
               denominator: d,
               equaveNumerator: null,
               equaveDenominator: null,
@@ -2803,7 +2804,7 @@ export class TimeMonzo {
           } else {
             return {
               type: 'NedjiLiteral',
-              numerator: n,
+              numerator: scaledNumerator,
               denominator: d,
               equaveNumerator: equave.s * equave.n,
               equaveDenominator: equave.d,

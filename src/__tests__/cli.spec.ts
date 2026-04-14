@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {describe, it, expect} from 'vitest';
 import {mkdtempSync, rmSync, writeFileSync} from 'fs';
 import {tmpdir} from 'os';
