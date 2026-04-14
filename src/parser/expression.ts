@@ -51,16 +51,18 @@ import {
   ternaryBroadcast,
 } from '../stdlib/index.js';
 import {
-  metricExponent,
   ZERO,
   ONE,
   NEGATIVE_ONE,
-  hasOwn,
+  F,
+} from '../utils.js';
+import {
+  metricExponent,
   binaryExponent,
   MetricPrefix,
   BinaryPrefix,
-  F,
-} from '../utils.js';
+  hasOwn,
+} from '../tools.js';
 import {
   pythagoreanMonzo,
   absoluteMonzo,

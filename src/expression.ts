@@ -2,10 +2,9 @@
 
 import {
   ABSURD_EXPONENT,
-  BinaryPrefix,
-  MetricPrefix,
   validateBigInt,
 } from './utils.js';
+import {BinaryPrefix, MetricPrefix} from './tools.js';
 import {Pythagorean, AbsolutePitch} from './pythagorean.js';
 import {AbsoluteMosPitch, MosStep} from './diamond-mos.js';
 import {Fraction, lcm} from 'xen-dev-utils/fraction';
