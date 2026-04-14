@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   IntervalLiteral,
   NedjiLiteral,
@@ -303,7 +302,7 @@ export class Interval {
    * @param value Property value.
    * @returns Deserialized {@link Interval} instance or other data without modifications.
    */
-  static reviver(key: string, value: any) {
+  static reviver(key: string, value: unknown) {
     if (
       typeof value === 'object' &&
       value !== null &&
@@ -327,7 +326,7 @@ export class Interval {
    * Serialize the time monzo to a JSON compatible object.
    * @returns The serialized object with property `type` set to `'Interval'`.
    */
-  toJSON(): any {
+  toJSON(): unknown {
     return {
       type: 'Interval',
       v: this.value.toJSON(),
@@ -341,8 +340,8 @@ export class Interval {
   }
 
   /**
-   * Clone this {@link Interval} instance without deeply copying any of the parts.
-   * @returns An interval like this one but replacing any of the parts won't change the original.
+   * Clone this {@link Interval} instance without deeply copying unknown of the parts.
+   * @returns An interval like this one but replacing unknown of the parts won't change the original.
    */
   shallowClone(): Interval {
     return new Interval(this.value, this.domain, this.steps, this.node, this);
@@ -1945,7 +1944,7 @@ export class ValBasis {
     }
     const node = {
       type: 'ValBasisLiteral',
-      basis: [] as any[],
+      basis: [] as unknown[],
     };
     const bail = () => `basis(${this.value.map(m => m.toString()).join(', ')})`;
     for (let monzo of this.value) {

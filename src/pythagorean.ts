@@ -507,7 +507,7 @@ export function pythagoreanMonzo(node: Pythagorean): TimeMonzo {
  * Convert an absolute Pythagorean pitch node to its monzo representation.
  * @param node Absolute pitch node to convert.
  * @returns A {@link TimeMonzo} rooted at octave 4, suitable for later interpretation as an absolute pitch.
- * @throws An error if the nominal or any accidental is unassigned.
+ * @throws An error if the nominal or unknown accidental is unassigned.
  */
 export function absoluteMonzo(node: AbsolutePitch) {
   if (!NOMINAL_VECTORS.has(node.nominal)) {

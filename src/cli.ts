@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {relative, repr} from './stdlib/index.js';
 import {Interval} from './interval.js';
@@ -161,11 +160,11 @@ export function repl(start: (options?: string | ReplOptions) => REPLServer) {
     evalCmd: string,
     context: Context,
     file: string,
-    cb: (err: Error | null, result: any) => void,
+    cb: (err: Error | null, result: unknown) => void,
   ) {
     currentCmd += evalCmd;
 
-    let counts: any;
+    let counts: unknown;
     try {
       counts = parenCounter(currentCmd);
     } catch (e) {
@@ -177,7 +176,7 @@ export function repl(start: (options?: string | ReplOptions) => REPLServer) {
           cb(e, undefined);
         }
       } else {
-        cb(new Error(repr.bind(visitor.rootContext)(e as any)), undefined);
+        cb(new Error(repr.bind(visitor.rootContext)(e as unknown)), undefined);
       }
       return;
     }
@@ -238,7 +237,7 @@ export function repl(start: (options?: string | ReplOptions) => REPLServer) {
       let err =
         e instanceof Error
           ? e
-          : new Error(repr.bind(visitor.rootContext)(e as any));
+          : new Error(repr.bind(visitor.rootContext)(e as unknown));
       if (err.name === 'SyntaxError') {
         err = new Error(err.message);
       }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   type ExportFunctionStatement,
   type ArrowFunction,
@@ -179,12 +178,12 @@ export function builtinNode(
 }
 
 /**
- * Throw an error if any of the parameters passed in has an `undefined` value.
+ * Throw an error if unknown of the parameters passed in has an `undefined` value.
  * @param parameters A record of parameters to make mandatory.
  * @returns Nothing.
  * @throws An error naming the first missing parameter.
  */
-export function requireParameters(parameters: Record<string, any>) {
+export function requireParameters(parameters: Record<string, unknown>) {
   for (const name of Object.keys(parameters)) {
     if (parameters[name] === undefined) {
       throw new Error(`Parameter '${name}' is required.`);

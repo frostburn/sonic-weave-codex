@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {describe, it, expect} from 'vitest';
 import {TimeMonzo, TimeReal} from '../monzo.js';
 import {
@@ -148,7 +147,7 @@ const SERIALIZED =
 
 describe('Interval JSON serialization', () => {
   it('can be serialized alongside other data', () => {
-    const data: any = [
+    const data: unknown = [
       'hello',
       sw`12`,
       12,

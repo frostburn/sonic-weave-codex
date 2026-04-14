@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {describe, it, expect} from 'vitest';
 import {
   pythagoreanMonzo,
@@ -131,7 +130,7 @@ describe('Pythagorean interval construction from parts', () => {
     const imperfect = ![1, 4, 5, 1.5, 4.5, 7.5].includes(base);
     const node: Pythagorean = {
       type: 'Pythagorean',
-      quality: {fraction, quality: quality as any},
+      quality: {fraction, quality: quality as unknown},
       augmentations,
       degree: {negative: degree < 0, base, octaves, imperfect},
     };

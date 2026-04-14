@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {approximateRadical} from 'xen-dev-utils/approximation';
 import {kCombinations as xduKCombinations} from 'xen-dev-utils/combinations';
 import {
@@ -150,7 +149,7 @@ lll.__node__ = builtinNode(lll);
 // == Third-party wrappers ==
 function kCombinations(
   this: ExpressionVisitor,
-  set: any[],
+  set: unknown[],
   k: SonicWeaveValue,
 ) {
   requireParameters({set});
@@ -305,7 +304,7 @@ function simplify(
   if (isArrayOrRecord(interval)) {
     return unaryBroadcast.bind(this)(interval, simplify.bind(this));
   }
-  return pubSimplify(interval as any);
+  return pubSimplify(interval as unknown);
 }
 simplify.__doc__ =
   'Get rid of interval formatting. Simplifies a ratio to lowest terms.';
@@ -1643,12 +1642,12 @@ slice.__doc__ =
   'Obtain a slice of a string or scale between the given indices.';
 slice.__node__ = builtinNode(slice);
 
-function zip(...args: any[][]) {
+function zip(...args: unknown[][]) {
   if (!args.length) {
     return [];
   }
   const minLength = Math.min(...args.map(a => a.length));
-  const result: any[][] = [];
+  const result: unknown[][] = [];
   for (let i = 0; i < minLength; ++i) {
     result.push(args.map(a => a[i]));
   }
@@ -1658,12 +1657,12 @@ zip.__doc__ =
   'Combine elements of each array into tuples until one of them is exhausted.';
 zip.__node__ = builtinNode(zip);
 
-function zipLongest(...args: any[][]) {
+function zipLongest(...args: unknown[][]) {
   if (!args.length) {
     return [];
   }
   const maxLength = Math.max(...args.map(a => a.length));
-  const result: any[][] = [];
+  const result: unknown[][] = [];
   for (let i = 0; i < maxLength; ++i) {
     result.push(args.map(a => a[i]));
   }
@@ -2154,8 +2153,8 @@ length.__node__ = builtinNode(length, PARENT_SCALE);
 
 function map(
   this: ExpressionVisitor,
-  mapper: (value: any, index: Interval, array: any[]) => unknown,
-  scale?: any[],
+  mapper: (value: unknown, index: Interval, array: unknown[]) => unknown,
+  scale?: unknown[],
 ) {
   requireParameters({mapper});
   mapper = mapper.bind(this);
@@ -2169,8 +2168,8 @@ map.__node__ = builtinNode(map, PARENT_SCALE);
 
 function remap(
   this: ExpressionVisitor,
-  mapper: (value: any, index: Interval, array: any[]) => unknown,
-  scale?: any[],
+  mapper: (value: unknown, index: Interval, array: unknown[]) => unknown,
+  scale?: unknown[],
 ) {
   requireParameters({mapper});
   scale ??= this.currentScale;
@@ -2184,8 +2183,12 @@ remap.__node__ = builtinNode(remap, PARENT_SCALE);
 
 function filter(
   this: ExpressionVisitor,
-  tester: (value: any, index: Interval, array: any[]) => SonicWeaveValue,
-  scale?: any[],
+  tester: (
+    value: unknown,
+    index: Interval,
+    array: unknown[],
+  ) => SonicWeaveValue,
+  scale?: unknown[],
 ) {
   requireParameters({tester});
   tester = tester.bind(this);
@@ -2200,8 +2203,12 @@ filter.__node__ = builtinNode(filter, PARENT_SCALE);
 
 function distill(
   this: ExpressionVisitor,
-  tester: (value: any, index: Interval, array: any[]) => SonicWeaveValue,
-  scale?: any[],
+  tester: (
+    value: unknown,
+    index: Interval,
+    array: unknown[],
+  ) => SonicWeaveValue,
+  scale?: unknown[],
 ) {
   requireParameters({tester});
   scale ??= this.currentScale;
@@ -2216,13 +2223,13 @@ distill.__node__ = builtinNode(distill, PARENT_SCALE);
 function arrayReduce(
   this: ExpressionVisitor,
   reducer: (
-    previousValue: any,
-    currentValue: any,
+    previousValue: unknown,
+    currentValue: unknown,
     currentIndex: Interval,
-    array: any[],
-  ) => any,
-  scale?: any[],
-  initialValue?: any,
+    array: unknown[],
+  ) => unknown,
+  scale?: unknown[],
+  initialValue?: unknown,
 ) {
   requireParameters({reducer});
   if (!(typeof reducer === 'function')) {
@@ -2249,7 +2256,7 @@ arrayReduce.__node__ = builtinNode(arrayReduce, PARENT_SCALE);
 function arrayRepeat(
   this: ExpressionVisitor,
   count: Interval,
-  scale?: any[] | string,
+  scale?: unknown[] | string,
 ) {
   requireParameters({count});
   const c = count.toInteger();
@@ -2269,8 +2276,8 @@ arrayRepeat.__node__ = builtinNode(arrayRepeat, PARENT_SCALE);
 
 function some(
   this: ExpressionVisitor,
-  array?: any[],
-  test?: (value: any, index: Interval, array: any[]) => unknown,
+  array?: unknown[],
+  test?: (value: unknown, index: Interval, array: unknown[]) => unknown,
 ) {
   if (!array) {
     array = this.currentScale;
@@ -2287,8 +2294,8 @@ some.__node__ = builtinNode(some, PARENT_SCALE);
 
 function every(
   this: ExpressionVisitor,
-  array?: any[],
-  test?: (value: any, index: Interval, array: any[]) => unknown,
+  array?: unknown[],
+  test?: (value: unknown, index: Interval, array: unknown[]) => unknown,
 ) {
   if (!array) {
     array = this.currentScale;
@@ -2378,21 +2385,21 @@ lstr.__doc__ =
   'Obtain a "best effort" short string representing a primitive value. Vectorizes over arrays.';
 lstr.__node__ = builtinNode(lstr);
 
-function print(this: ExpressionVisitor, ...args: any[]) {
+function print(this: ExpressionVisitor, ...args: unknown[]) {
   const s = repr.bind(this);
   console.log(...args.map(a => (typeof a === 'string' ? a : s(a))));
 }
 print.__doc__ = 'Print the arguments to the console.';
 print.__node__ = builtinNode(print);
 
-function warn(this: ExpressionVisitor, ...args: any[]) {
+function warn(this: ExpressionVisitor, ...args: unknown[]) {
   const s = repr.bind(this);
   console.log(...args.map(a => (typeof a === 'string' ? a : s(a))));
 }
 warn.__doc__ = 'Print the arguments to the console with "warning" emphasis.';
 warn.__node__ = builtinNode(warn);
 
-function dir(arg: any) {
+function dir(arg: unknown) {
   console.dir(arg, {depth: null});
 }
 dir.__doc__ = 'Obtain the javascript representation of the value.';
@@ -2481,7 +2488,7 @@ function centsColor(
 ): Color | Color[] {
   if (Array.isArray(interval)) {
     this.spendGas(interval.length);
-    return interval.map(centsColor as any);
+    return interval.map(centsColor as unknown);
   }
   return pubCentsColor.bind(this.rootContext)(upcastBool(interval));
 }
@@ -2495,7 +2502,7 @@ export function factorColor(
 ): Color | Color[] {
   if (Array.isArray(interval)) {
     this.spendGas(interval.length);
-    return interval.map(factorColor as any);
+    return interval.map(factorColor as unknown);
   }
   return pubFactorColor.bind(this.rootContext)(upcastBool(interval));
 }

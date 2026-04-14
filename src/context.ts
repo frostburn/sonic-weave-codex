@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {SonicWeaveValue} from './stdlib/index.js';
 import {Interval} from './interval.js';
 import {TimeMonzo} from './monzo.js';
@@ -90,7 +89,7 @@ export class RootContext {
    * @param value Property value.
    * @returns Deserialized {@link RootContext} instance or other data without modifications.
    */
-  static reviver(key: string, value: any) {
+  static reviver(key: string, value: unknown) {
     if (
       typeof value === 'object' &&
       value !== null &&

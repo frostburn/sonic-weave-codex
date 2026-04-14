@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {Fraction, gcd} from 'xen-dev-utils/fraction';
 import {PRIMES} from 'xen-dev-utils/primes';
 import {
@@ -664,9 +663,9 @@ export class ExpressionVisitor {
       return sonicTruth(test) ? consequent : alternate;
     }
     return where(
-      this.visit(node.test) as any,
-      this.visit(node.consequent) as any,
-      this.visit(node.alternate) as any,
+      this.visit(node.test) as unknown,
+      this.visit(node.consequent) as unknown,
+      this.visit(node.alternate) as unknown,
     );
   }
 
@@ -710,9 +709,9 @@ export class ExpressionVisitor {
       }
     }
     return rr(
-      this.visit(node.left) as any,
-      this.visit(node.middle) as any,
-      this.visit(node.right) as any,
+      this.visit(node.left) as unknown,
+      this.visit(node.middle) as unknown,
+      this.visit(node.right) as unknown,
     );
   }
 
@@ -1824,15 +1823,15 @@ export class ExpressionVisitor {
         // eslint-disable-next-line eqeqeq
         return left != right;
       case '<=':
-        return (left as any) <= (right as any);
+        return (left as unknown) <= (right as unknown);
       case '<':
-        return (left as any) < (right as any);
+        return (left as unknown) < (right as unknown);
       case '>=':
-        return (left as any) >= (right as any);
+        return (left as unknown) >= (right as unknown);
       case '>':
-        return (left as any) > (right as any);
+        return (left as unknown) > (right as unknown);
       case 'al~':
-        return (left as any) ?? (right as any);
+        return (left as unknown) ?? (right as unknown);
     }
     throw new Error(`Unsupported binary operation '${operator}'.`);
   }

@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {describe, it, expect} from 'vitest';
 import {evaluateExpression, sw} from '../parser.js';
 import {Interval} from '../../interval.js';
 import {SonicWeavePrimitive} from '../../stdlib/index.js';
 
-function sw0D(strings: TemplateStringsArray, ...args: any[]): number {
+function sw0D(strings: TemplateStringsArray, ...args: unknown[]): number {
   const result = sw(strings, ...args);
   if (result instanceof Interval) {
     return result.valueOf();
@@ -12,8 +11,8 @@ function sw0D(strings: TemplateStringsArray, ...args: any[]): number {
   throw new Error('Failed to evaluate to an interval.');
 }
 
-function sw1D(strings: TemplateStringsArray, ...args: any[]): number[] {
-  const result: any = sw(strings, ...args);
+function sw1D(strings: TemplateStringsArray, ...args: unknown[]): number[] {
+  const result: unknown = sw(strings, ...args);
   if (!Array.isArray(result)) {
     throw new Error('Failed to evaluate to an array.');
   }
@@ -27,8 +26,8 @@ function sw1D(strings: TemplateStringsArray, ...args: any[]): number[] {
   return result;
 }
 
-function sw2D(strings: TemplateStringsArray, ...args: any[]): number[][] {
-  const result: any = sw(strings, ...args);
+function sw2D(strings: TemplateStringsArray, ...args: unknown[]): number[][] {
+  const result: unknown = sw(strings, ...args);
   if (!Array.isArray(result)) {
     throw new Error('Failed to evaluate to an array.');
   }
@@ -49,13 +48,13 @@ function sw2D(strings: TemplateStringsArray, ...args: any[]): number[][] {
 
 function swRec(
   strings: TemplateStringsArray,
-  ...args: any[]
+  ...args: unknown[]
 ): Record<string, number> {
-  const result: any = sw(strings, ...args);
+  const result: unknown = sw(strings, ...args);
   return Object.fromEntries(
     Object.entries(result).map(([key, value]) => [
       key,
-      (value as any).valueOf(),
+      (value as unknown).valueOf(),
     ]),
   ) as Record<string, number>;
 }

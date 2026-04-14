@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {describe, it, expect} from 'vitest';
 import {
   getFloraComma,
@@ -235,7 +234,7 @@ describe('FJS interval inflector', () => {
       const imperfect = ![1, 4, 5].includes(degree);
       const node: Pythagorean = {
         type: 'Pythagorean',
-        quality: {fraction: vulgar, quality: quality as any},
+        quality: {fraction: vulgar, quality: quality as unknown},
         augmentations,
         degree: {base, octaves, negative: false, imperfect},
       };

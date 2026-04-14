@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {describe, it, expect} from 'vitest';
 import {evaluateExpression} from '../parser.js';
 import {Color, Interval, Val} from '../../interval.js';
@@ -2226,7 +2225,7 @@ describe('SonicWeave expression evaluator', () => {
   });
 
   it('ignores ternary broadcasting of records', () => {
-    const oof = evaluate('1 where [true, false] else #{a: 2}') as any;
+    const oof = evaluate('1 where [true, false] else #{a: 2}') as unknown;
     expect(oof).toHaveLength(2);
     expect(oof[0].valueOf()).toBe(1);
     expect(oof[1].a.valueOf()).toBe(2);

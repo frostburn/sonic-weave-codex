@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {centsToValue, valueToCents} from 'xen-dev-utils/conversion';
 import {monzoToCents, sum} from 'xen-dev-utils/core';
 import {
@@ -231,7 +230,7 @@ export class TimeReal {
    * @param value Property value.
    * @returns Deserialized {@link TimeReal} instance or other data without modifications.
    */
-  static reviver(key: string, value: any) {
+  static reviver(key: string, value: unknown) {
     if (
       typeof value === 'object' &&
       value !== null &&
@@ -1309,7 +1308,7 @@ export class TimeMonzo {
    * @param value Property value.
    * @returns Deserialized {@link TimeMonzo} instance or other data without modifications.
    */
-  static reviver(key: string, value: any) {
+  static reviver(key: string, value: unknown) {
     if (
       typeof value === 'object' &&
       value !== null &&
@@ -2659,7 +2658,9 @@ export class TimeMonzo {
     if (this.timeExponent.n) {
       throw new Error('Time exponent prevents factorization over integers.');
     }
-    const result: Map<number, Fraction> = primeFactorize(this.residual) as any;
+    const result: Map<number, Fraction> = primeFactorize(
+      this.residual,
+    ) as unknown;
     for (const [key, value] of result) {
       result.set(key, new Fraction(value));
     }

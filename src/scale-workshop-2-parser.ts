@@ -135,7 +135,7 @@ function parseCents(sw2Node: SW2CentsLiteral, numberOfComponents: number) {
  * @param input A string to parse.
  * @param numberOfComponents Number of components to use for the {@link Interval} instance's {@link TimeMonzo} prime exponent part.
  * @param admitBareNumbers Interpret bare numbers as n/1 ratios instead of throwing an error.
- * @param universalMinus Allow unary minus in front of any supported Scale Workshop 2 line type instead of restricting it to cents values.
+ * @param universalMinus Allow unary minus in front of unknown supported Scale Workshop 2 line type instead of restricting it to cents values.
  * @returns {@link Interval} instance constructed from the input string.
  * @throws An error if the input cannot be interpreted as a supported Scale Workshop 2 interval line.
  */

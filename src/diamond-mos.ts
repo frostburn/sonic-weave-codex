@@ -340,7 +340,7 @@ function mosInflection(
  * @param node Absolute note like J@5.
  * @param config Result of a MOS declaration.
  * @returns A time monzo relative to J4.
- * @throws An error if the nominal or any accidental is not assigned by the MOS configuration.
+ * @throws An error if the nominal or unknown accidental is not assigned by the MOS configuration.
  */
 export function absoluteMosMonzo(
   node: AbsoluteMosPitch,

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import {ABSURD_EXPONENT, validateBigInt} from './utils.js';
@@ -1170,7 +1169,7 @@ export function integerToVectorComponent(num: number): VectorComponent {
 
 export function literalToJSON(
   literal?: IntervalLiteral | CoIntervalLiteral | ValBasisLiteral,
-): any {
+): unknown {
   if (!literal) {
     return undefined;
   }
@@ -1240,7 +1239,7 @@ export function literalToJSON(
 }
 
 export function intervalLiteralFromJSON(
-  object: any,
+  object: unknown,
 ): IntervalLiteral | undefined {
   if (object === undefined) {
     return undefined;
