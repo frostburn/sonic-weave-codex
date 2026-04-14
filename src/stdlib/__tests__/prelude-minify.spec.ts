@@ -23,6 +23,7 @@ describe('prelude minifier regression coverage', () => {
     'csgs([8/7, 7/6], 3);',
     '1;2/1;coalesce();',
     '4096/4095;3/2;4095/2048;2/1;coalesce();',
+    'doc(void);',
   ];
 
   for (const sample of samples) {
