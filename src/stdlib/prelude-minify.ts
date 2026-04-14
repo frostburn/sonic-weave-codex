@@ -10,6 +10,32 @@ type Gap = {
   hasNewline: boolean;
 };
 
+const ALIASES: ReadonlyArray<readonly [string, string, string]> = [
+  ['niente', '_N', 'const _N=niente;'],
+  ['length', '_L', 'const _L=length;'],
+];
+
+function applyAliases(tokens: Token[]) {
+  const used = new Set<string>();
+  const aliasMap = new Map(ALIASES.map(([from, to]) => [from, to]));
+
+  for (const token of tokens) {
+    if (token.type !== 'word') {
+      continue;
+    }
+    const replacement = aliasMap.get(token.value);
+    if (!replacement) {
+      continue;
+    }
+    token.value = replacement;
+    used.add(replacement);
+  }
+
+  return ALIASES.filter(([, to]) => used.has(to)).map(
+    ([, , declaration]) => declaration,
+  );
+}
+
 function isIdentifierChar(char: string) {
   return /[\p{L}\p{N}_$]/u.test(char);
 }
@@ -138,6 +164,7 @@ function separator(prev: Token, next: Token, gap: Gap) {
  */
 export function minifyPrelude(source: string) {
   const {tokens, gaps} = tokenize(source);
+  const declarations = applyAliases(tokens);
   if (!tokens.length) {
     return '';
   }
@@ -148,5 +175,9 @@ export function minifyPrelude(source: string) {
     result += tokens[i].value;
   }
 
-  return result.trim();
+  result = result.trim();
+  if (declarations.length) {
+    return `${declarations.join('')}\n${result}`;
+  }
+  return result;
 }
