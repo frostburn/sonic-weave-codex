@@ -121,6 +121,75 @@ function tokenize(source: string) {
   return {tokens, gaps};
 }
 
+function renameLocalVariables(tokens: Token[]) {
+  let aliasCounter = 0;
+  const scopes: Array<Map<string, string>> = [new Map()];
+
+  const createAlias = () => {
+    const alias = `_v${aliasCounter.toString(36)}`;
+    aliasCounter += 1;
+    return alias;
+  };
+
+  const currentScope = () => scopes[scopes.length - 1];
+  const lookup = (name: string) => {
+    for (let i = scopes.length - 1; i >= 0; --i) {
+      const alias = scopes[i].get(name);
+      if (alias) {
+        return alias;
+      }
+    }
+    return undefined;
+  };
+
+  let inDeclaration = false;
+  let expectIdentifier = false;
+
+  for (const token of tokens) {
+    if (token.type === 'symbol') {
+      if (token.value === '{') {
+        scopes.push(new Map());
+      } else if (token.value === '}') {
+        scopes.pop();
+      } else if (inDeclaration && token.value === ',') {
+        expectIdentifier = true;
+      } else if (
+        inDeclaration &&
+        (token.value === ';' || token.value === ')')
+      ) {
+        inDeclaration = false;
+        expectIdentifier = false;
+      }
+      continue;
+    }
+
+    if (token.type !== 'word') {
+      continue;
+    }
+
+    if (token.value === 'const' || token.value === 'let') {
+      inDeclaration = true;
+      expectIdentifier = true;
+      continue;
+    }
+
+    if (inDeclaration && expectIdentifier) {
+      const scope = currentScope();
+      if (!scope.has(token.value)) {
+        scope.set(token.value, createAlias());
+      }
+      token.value = scope.get(token.value)!;
+      expectIdentifier = false;
+      continue;
+    }
+
+    const alias = lookup(token.value);
+    if (alias) {
+      token.value = alias;
+    }
+  }
+}
+
 function canTouch(prev: Token, next: Token) {
   if (prev.type === 'symbol' && '([{,;'.includes(prev.value)) {
     return true;
@@ -165,6 +234,7 @@ function separator(prev: Token, next: Token, gap: Gap) {
 export function minifyPrelude(source: string) {
   const {tokens, gaps} = tokenize(source);
   const declarations = applyAliases(tokens);
+  renameLocalVariables(tokens);
   if (!tokens.length) {
     return '';
   }
