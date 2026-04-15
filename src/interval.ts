@@ -298,11 +298,11 @@ export class Interval {
    * const data = JSON.parse(serializedData, Interval.reviver);
    * ```
    *
-   * @param key Property name.
+   * @param _key Property name.
    * @param value Property value.
    * @returns Deserialized {@link Interval} instance or other data without modifications.
    */
-  static reviver(key: string, value: unknown) {
+  static reviver(_key: string, value: unknown) {
     type SerializedInterval = {
       type: 'Interval';
       v: unknown;

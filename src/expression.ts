@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import {ABSURD_EXPONENT, validateBigInt} from './utils.js';
 import {BinaryPrefix, MetricPrefix} from './tools.js';
 import {Pythagorean, AbsolutePitch} from './pythagorean.js';
@@ -850,27 +848,27 @@ export function powNodes(
 // == Placeholders for future implementation ==
 
 /** @hidden */
-export function ipowNodes(a?: IntervalLiteral, b?: IntervalLiteral) {
+export function ipowNodes(_a?: IntervalLiteral, _b?: IntervalLiteral) {
   return undefined;
 }
 
 /** @hidden */
-export function logNodes(a?: IntervalLiteral, b?: IntervalLiteral) {
+export function logNodes(_a?: IntervalLiteral, _b?: IntervalLiteral) {
   return undefined;
 }
 
 /** @hidden */
-export function lensAddNodes(a?: IntervalLiteral, b?: IntervalLiteral) {
+export function lensAddNodes(_a?: IntervalLiteral, _b?: IntervalLiteral) {
   return undefined;
 }
 
 /** @hidden */
-export function lensSubNodes(a?: IntervalLiteral, b?: IntervalLiteral) {
+export function lensSubNodes(_a?: IntervalLiteral, _b?: IntervalLiteral) {
   return undefined;
 }
 
 /** @hidden */
-export function pitchRoundToNodes(a?: IntervalLiteral, b?: IntervalLiteral) {
+export function pitchRoundToNodes(_a?: IntervalLiteral, _b?: IntervalLiteral) {
   return undefined;
 }
 

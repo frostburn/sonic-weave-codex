@@ -35,7 +35,7 @@ const NEUTRAL_BRIDGING_RADIUS = 92.1;
 const SEMIQUARTAL_BRIDGING_RADIUS = 137.2;
 
 // XXX: Not much thought was given to this choice.
-const TONE_SPLITTER_BRIDGING_RADIUS = SEMIAPOTOME;
+const TONE_SPLITTER_BRIDGING_RADIUS = SEMIQUARTAL_BRIDGING_RADIUS;
 
 const FIFTH = PRIME_CENTS[1] - PRIME_CENTS[0];
 
@@ -136,10 +136,14 @@ function toneSplitterMaster(primeCents: number): [number, number] {
   let k = 0.5;
 
   while (true) {
-    if (circleDistance(primeCents, pythagoras) < SEMIQUARTAL_BRIDGING_RADIUS) {
+    if (
+      circleDistance(primeCents, pythagoras) < TONE_SPLITTER_BRIDGING_RADIUS
+    ) {
       return [k, 0.5 - k];
     }
-    if (circleDistance(primeCents, -pythagoras) < SEMIQUARTAL_BRIDGING_RADIUS) {
+    if (
+      circleDistance(primeCents, -pythagoras) < TONE_SPLITTER_BRIDGING_RADIUS
+    ) {
       return [-k, k - 0.5];
     }
     pythagoras += FIFTH;

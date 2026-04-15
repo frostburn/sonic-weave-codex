@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {relative, repr} from './stdlib/index.js';
 import {Interval} from './interval.js';
 import {
-  ExpressionVisitor,
   StatementVisitor,
   evaluateSource,
   getSourceVisitor,
@@ -12,7 +10,6 @@ import type {REPLServer, ReplOptions} from 'repl';
 import type {Context} from 'node:vm';
 import * as parenCounterParser from './parser/paren-counter.js';
 import {literalToString} from './expression.js';
-import {TimeReal} from './monzo.js';
 import packageJson from '../package.json' with {type: 'json'};
 const parenCounter = (
   parenCounterParser as {
@@ -159,8 +156,8 @@ export function repl(start: (options?: string | ReplOptions) => REPLServer) {
   function evaluateStatement(
     this: REPLServer,
     evalCmd: string,
-    context: Context,
-    file: string,
+    _context: Context,
+    _file: string,
     cb: (err: Error | null, result: unknown) => void,
   ) {
     currentCmd += evalCmd;

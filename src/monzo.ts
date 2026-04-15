@@ -226,11 +226,11 @@ export class TimeReal {
    * const data = JSON.parse(serializedData, TimeReal.reviver);
    * ```
    *
-   * @param key Property name.
+   * @param _key Property name.
    * @param value Property value.
    * @returns Deserialized {@link TimeReal} instance or other data without modifications.
    */
-  static reviver(key: string, value: unknown) {
+  static reviver(_key: string, value: unknown) {
     type SerializedTimeReal = {type: 'TimeReal'; t: number; v: number | string};
     if (
       typeof value === 'object' &&
@@ -1306,11 +1306,11 @@ export class TimeMonzo {
    * const data = JSON.parse(serializedData, TimeMonzo.reviver);
    * ```
    *
-   * @param key Property name.
+   * @param _key Property name.
    * @param value Property value.
    * @returns Deserialized {@link TimeMonzo} instance or other data without modifications.
    */
-  static reviver(key: string, value: unknown) {
+  static reviver(_key: string, value: unknown) {
     type SerializedTimeMonzo = {
       type: 'TimeMonzo';
       t: unknown;

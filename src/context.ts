@@ -85,11 +85,11 @@ export class RootContext {
    * const data = JSON.parse(serializedData, RootContext.reviver);
    * ```
    *
-   * @param key Property name.
+   * @param _key Property name.
    * @param value Property value.
    * @returns Deserialized {@link RootContext} instance or other data without modifications.
    */
-  static reviver(key: string, value: unknown) {
+  static reviver(_key: string, value: unknown) {
     type SerializedRootContext = {
       type: 'RootContext';
       gas: number;

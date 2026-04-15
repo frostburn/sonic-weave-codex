@@ -6,9 +6,8 @@ import {
   Expression,
 } from '../ast.js';
 import {Color, Interval, Temperament, Val, ValBasis} from '../interval.js';
-import {TimeMonzo, TimeReal} from '../monzo.js';
+import {TimeReal} from '../monzo.js';
 import {type ExpressionVisitor} from '../parser/expression.js';
-import {ZERO} from '../utils.js';
 
 /**
  * Function that can be called inside the SonicWeave runtime.
@@ -47,9 +46,6 @@ export type SonicWeaveValue =
   | SonicWeavePrimitive
   | SonicWeavePrimitive[]
   | Record<string, SonicWeavePrimitive>;
-
-const ZERO_MONZO = new TimeMonzo(ZERO, [], ZERO);
-const ONE_MONZO = new TimeMonzo(ZERO, []);
 
 const INT_CACHE = [...Array(100).keys()].map(i => Interval.fromInteger(i));
 

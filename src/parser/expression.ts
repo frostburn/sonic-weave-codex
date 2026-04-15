@@ -179,7 +179,6 @@ function includes(element: SonicWeaveValue, scale: SonicWeaveValue[]) {
   return scale.includes(element);
 }
 
-const TWO_MONZO = new TimeMonzo(ZERO, [ONE]);
 const TEN_MONZO = new TimeMonzo(ZERO, [ONE, ZERO, ONE]);
 const KIBI_MONZO = new TimeMonzo(ZERO, [F(10)]);
 const CENT_MONZO = new TimeMonzo(ZERO, [F(1, 1200)]);
