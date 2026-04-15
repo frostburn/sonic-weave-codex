@@ -1346,10 +1346,10 @@ export class StatementVisitor {
       docstring = node.body[0].expression.value;
       node.body.shift();
     }
-    const self = this;
+    const scopeParent = this;
 
     function realization(this: ExpressionVisitor, ...args: SonicWeaveValue[]) {
-      const localVisitor = new StatementVisitor(self);
+      const localVisitor = new StatementVisitor(scopeParent);
       localVisitor.mutables.set('$$', this.parent.currentScale);
 
       // XXX: Poor type system gets abused again.

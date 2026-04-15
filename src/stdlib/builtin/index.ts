@@ -2492,8 +2492,13 @@ function centsColor(
 ): Color | Color[] {
   if (Array.isArray(interval)) {
     this.spendGas(interval.length);
-    const colorize = pubCentsColor.bind(this.rootContext);
-    return interval.map(i => colorize(upcastBool(i as SonicWeaveValue)));
+    return interval.map(
+      centsColor as (
+        value: SonicWeavePrimitive,
+        index: number,
+        array: SonicWeavePrimitive[],
+      ) => Color,
+    );
   }
   return pubCentsColor.bind(this.rootContext)(upcastBool(interval));
 }
@@ -2507,8 +2512,13 @@ export function factorColor(
 ): Color | Color[] {
   if (Array.isArray(interval)) {
     this.spendGas(interval.length);
-    const colorize = pubFactorColor.bind(this.rootContext);
-    return interval.map(i => colorize(upcastBool(i as SonicWeaveValue)));
+    return interval.map(
+      factorColor as (
+        value: SonicWeavePrimitive,
+        index: number,
+        array: SonicWeavePrimitive[],
+      ) => Color,
+    );
   }
   return pubFactorColor.bind(this.rootContext)(upcastBool(interval));
 }

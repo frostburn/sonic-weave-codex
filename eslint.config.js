@@ -63,7 +63,7 @@ export default [
       '@typescript-eslint/no-this-alias': [
         'error',
         {
-          allowedNames: ['self'],
+          allowedNames: ['self', 'scopeParent'],
         },
       ],
       '@typescript-eslint/no-unused-vars': [

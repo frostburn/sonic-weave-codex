@@ -52,8 +52,8 @@ describe('Idempotent formatting', () => {
   });
 
   it('has stable signed equal temperament against existing node', () => {
-    const downMajorThird = TimeMonzo.fromEqualTemperament('-4/12');
-    const node = intervalValueAs(downMajorThird, {
+    const negativeMajorThird = TimeMonzo.fromEqualTemperament('-4/12');
+    const node = intervalValueAs(negativeMajorThird, {
       type: 'NedjiLiteral',
       numerator: 4,
       denominator: 12,
