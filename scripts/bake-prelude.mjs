@@ -5,6 +5,12 @@ const DIST_PRELUDE_PATH = new URL('../dist/stdlib/prelude.js', import.meta.url);
 const SOURCE_COMMENT =
   "// These source-level `replaceAll()` minification hacks are baked into dist during `prepare`.\n";
 
+function evaluateTemplateEscapes(rawTemplate) {
+  // Prevent accidental interpolation when evaluating template escapes.
+  const escapedInterpolation = rawTemplate.replaceAll('${', '\\${');
+  return Function(`'use strict'; return \`${escapedInterpolation}\`;`)();
+}
+
 function bakePreludeSource(content, constantName) {
   const pattern = new RegExp(
     'export const ' +
@@ -13,7 +19,8 @@ function bakePreludeSource(content, constantName) {
   );
 
   return content.replace(pattern, (_, source) => {
-    const minified = source
+    const cookedSource = evaluateTemplateEscapes(source);
+    const minified = cookedSource
       .replaceAll('riff', 'fn')
       .replaceAll('  ', '')
       .replaceAll('\n', '');
