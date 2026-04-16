@@ -2,6 +2,9 @@ import {readFileSync, writeFileSync} from 'node:fs';
 
 const DIST_PRELUDE_PATH = new URL('../dist/stdlib/prelude.js', import.meta.url);
 
+const SOURCE_COMMENT =
+  "// These source-level `replaceAll()` minification hacks are baked into dist during `prepare`.\n";
+
 function bakePreludeSource(content, constantName) {
   const pattern = new RegExp(
     'export const ' +
@@ -19,7 +22,8 @@ function bakePreludeSource(content, constantName) {
 }
 
 const original = readFileSync(DIST_PRELUDE_PATH, 'utf8');
-let baked = bakePreludeSource(original, 'PRELUDE_VOLATILES');
+let baked = original.replace(SOURCE_COMMENT, '');
+baked = bakePreludeSource(baked, 'PRELUDE_VOLATILES');
 baked = bakePreludeSource(baked, 'PRELUDE_SOURCE');
 
 if (baked === original) {
