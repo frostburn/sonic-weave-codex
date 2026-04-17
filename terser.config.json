@@ -1,0 +1,11 @@
+{
+  "compress": {
+    "ecma": 2020,
+    "passes": 2
+  },
+  "mangle": true,
+  "module": true,
+  "format": {
+    "comments": false
+  }
+}

@@ -44,7 +44,7 @@
     "precompile": "npm run compile-parsers",
     "compile": "tsc",
     "fix": "gts fix",
-    "prepare": "npm run compile && npm run bake-prelude",
+    "prepare": "npm run compile && npm run bake-prelude && npm run minify",
     "pretest": "npm run compile",
     "posttest": "npm run lint",
     "test": "vitest",
@@ -57,7 +57,8 @@
     "inspect-grammar": "node scripts/inspect-printable-ascii.js",
     "preinspect-random": "npm run compile-sonic-weave-parser",
     "inspect-random": "node scripts/inspect-random-programs.js",
-    "bake-prelude": "node scripts/bake-prelude.mjs"
+    "bake-prelude": "node scripts/bake-prelude.mjs",
+    "minify": "terser dist/index.js --config-file terser.config.json --output dist/index.min.js"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
@@ -65,7 +66,8 @@
     "peggy": "^5.1.0",
     "typedoc": "^0.28.19",
     "typescript": "^6.0.2",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.4",
+    "terser": "^5.44.0"
   },
   "dependencies": {
     "moment-of-symmetry": "^0.10.0",
@@ -152,6 +154,10 @@
       "types": "./dist/stdlib/index.d.ts",
       "import": "./dist/stdlib/index.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./min": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.min.js"
+    }
   }
 }
