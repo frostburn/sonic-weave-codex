@@ -11,7 +11,8 @@ This document describes the `sonic-weave` npm package and its main runtime types
 3. [Interval type](#interval-type)
 4. [Basis type](#basis-type)
 5. [Val type](#val-type)
-6. [Embedding SonicWeave](#embedding-sonicweave)
+6. [Minified build (`./min`)](#minified-build-min)
+7. [Embedding SonicWeave](#embedding-sonicweave)
     1. [Parsing](#parsing)
     2. [Execution](#execution)
 
@@ -132,6 +133,23 @@ The main `Val` properties are:
 - `.value: TimeMonzo` — the mapping entries, stored in `.value.primeExponents` when expressed in the standard prime basis.
 - `.basis: ValBasis` — the subgroup basis that the val maps from. `.basis.equave` is the interval of equivalence for the temperament.
 - `.node: CoIntervalLiteral | undefined` — a virtual AST node used for string representation.
+
+## Minified build (`./min`)
+
+The package also ships an optional minified entrypoint at `sonic-weave/min`. This artifact is intended for advanced bundling flows where every byte matters and users understand the trade-offs of property mangling.
+
+```ts
+import {parseAST, evaluateExpression} from 'sonic-weave/min';
+```
+
+Build notes:
+
+- `npm run build:min` writes the mirrored output tree to `dist/min/`.
+- Property mangling follows `scripts/minify-policy.mjs`: only internal/private-safe names that match a regex are eligible.
+- Public/exported field names and common AST keys (for example `numberOfComponents` and `denominator`) are reserved by default.
+- Set `SONIC_WEAVE_MIN_COMPACT=1` to disable the reserved-name guard for maximum size reduction.
+
+⚠️ Caveat: the minified build can break consumers that rely on reflection (`obj[prop]` with dynamic strings), ad-hoc serialization, or external code that assumes private/internal property names. Keep using the standard entrypoint unless your integration has been verified against these constraints.
 
 ## Embedding SonicWeave
 
