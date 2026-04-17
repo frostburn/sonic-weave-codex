@@ -1,10 +1,16 @@
 {
-  "compress": {
-    "ecma": 2020,
-    "passes": 2
-  },
-  "mangle": true,
+  "ecma": 2020,
   "module": true,
+  "compress": {
+    "passes": 3,
+    "toplevel": true,
+    "unsafe_arrows": true,
+    "hoist_funs": true,
+    "pure_getters": true
+  },
+  "mangle": {
+    "toplevel": true
+  },
   "format": {
     "comments": false
   }

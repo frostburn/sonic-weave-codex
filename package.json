@@ -67,7 +67,8 @@
     "typedoc": "^0.28.19",
     "typescript": "^6.0.2",
     "vitest": "^4.1.4",
-    "terser": "^5.44.0"
+    "terser": "^5.44.0",
+    "esbuild": "^0.25.11"
   },
   "dependencies": {
     "moment-of-symmetry": "^0.10.0",
