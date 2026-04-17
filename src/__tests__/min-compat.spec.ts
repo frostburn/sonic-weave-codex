@@ -40,6 +40,13 @@ describe('dist/min compatibility matrix', () => {
         },
       },
       {
+        name: 'block-expression helper methods remain callable',
+        run: mod => {
+          const interval = mod.evaluateExpression('({ 1 })', false);
+          return String(interval);
+        },
+      },
+      {
         name: 'expression result parity',
         run: mod => {
           const interval = mod.evaluateExpression('5/4 * 6/5', false);

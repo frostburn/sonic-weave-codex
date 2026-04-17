@@ -44,7 +44,7 @@
     "precompile": "npm run compile-parsers",
     "compile": "tsc",
     "fix": "gts fix",
-    "prepare": "npm run compile && npm run build:min && npm run bake-prelude",
+    "prepare": "npm run compile && npm run bake-prelude && npm run build:min",
     "pretest": "npm run compile && npm run build:min",
     "posttest": "npm run lint",
     "test": "vitest",

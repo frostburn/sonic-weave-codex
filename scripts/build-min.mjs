@@ -28,48 +28,6 @@ async function collectJavaScriptFiles(directory) {
   return files;
 }
 
-function createPropertyMangleMap(source, regex, reserved) {
-  const mapping = new Map();
-  const seen = new Set();
-  const dotPropertyPattern = /\.(?<prop>[A-Za-z_$][\w$]*)/g;
-  for (const match of source.matchAll(dotPropertyPattern)) {
-    const prop = match.groups?.prop;
-    if (!prop || !regex.test(prop) || reserved.has(prop)) {
-      continue;
-    }
-    seen.add(prop);
-  }
-
-  let index = 0;
-  const alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$_';
-  const nextName = () => {
-    let n = index++;
-    let name = '';
-    do {
-      name = alphabet[n % alphabet.length] + name;
-      n = Math.floor(n / alphabet.length) - 1;
-    } while (n >= 0);
-    return name;
-  };
-
-  for (const prop of seen) {
-    mapping.set(prop, `_${nextName()}`);
-  }
-  return mapping;
-}
-
-function applyPropertyMangling(source, mapping) {
-  let output = source;
-  for (const [from, to] of mapping) {
-    const escaped = from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const dotRef = new RegExp(`\\.${escaped}(?![\\w$])`, 'g');
-    const quotedKey = new RegExp(`(["'])${escaped}\\1\\s*:`, 'g');
-    output = output.replace(dotRef, `.${to}`);
-    output = output.replace(quotedKey, `'${to}':`);
-  }
-  return output;
-}
-
 function basicMinify(source) {
   return source
     .replace(/\/\*[\s\S]*?\*\//g, '')
@@ -91,7 +49,6 @@ async function tryLoadTerser() {
 async function main() {
   const compactMode = process.env.SONIC_WEAVE_MIN_COMPACT === '1';
   const mangle = getManglePolicy(compactMode);
-  const reserved = new Set(mangle.reserved);
   const terserMinify = await tryLoadTerser();
 
   await rm(minDir, {recursive: true, force: true});
@@ -116,8 +73,7 @@ async function main() {
       });
       code = result.code;
     } else {
-      const mapping = createPropertyMangleMap(source, mangle.regex, reserved);
-      code = basicMinify(applyPropertyMangling(source, mapping));
+      code = basicMinify(source);
     }
 
     if (!code) {
@@ -126,7 +82,7 @@ async function main() {
     await writeFile(outputPath, code);
   }
 
-  const backend = terserMinify ? 'terser' : 'basic-fallback';
+  const backend = terserMinify ? 'terser' : 'basic-fallback (no property mangling)';
   console.log(
     `Built ${jsFiles.length} minified files in ${path.relative(repoRoot, minDir)} using ${backend} (compact=${compactMode ? 'on' : 'off'}).`,
   );

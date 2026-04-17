@@ -145,11 +145,11 @@ import {parseAST, evaluateExpression} from 'sonic-weave/min';
 Build notes:
 
 - `npm run build:min` writes the mirrored output tree to `dist/min/`.
-- Property mangling follows `scripts/minify-policy.mjs`: only internal/private-safe names that match a regex are eligible.
+- When `terser` is available, property mangling follows `scripts/minify-policy.mjs`: only internal/private-safe names that match a regex are eligible.
 - Public/exported field names and common AST keys (for example `numberOfComponents` and `denominator`) are reserved by default.
-- Set `SONIC_WEAVE_MIN_COMPACT=1` to disable the reserved-name guard for maximum size reduction.
+- Set `SONIC_WEAVE_MIN_COMPACT=1` to disable the reserved-name guard for maximum size reduction (terser backend only).
 
-⚠️ Caveat: the minified build can break consumers that rely on reflection (`obj[prop]` with dynamic strings), ad-hoc serialization, or external code that assumes private/internal property names. Keep using the standard entrypoint unless your integration has been verified against these constraints.
+⚠️ Caveat: the terser-backed minified build can break consumers that rely on reflection (`obj[prop]` with dynamic strings), ad-hoc serialization, or external code that assumes private/internal property names. Keep using the standard entrypoint unless your integration has been verified against these constraints.
 
 ## Embedding SonicWeave
 
