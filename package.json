@@ -58,7 +58,7 @@
     "preinspect-random": "npm run compile-sonic-weave-parser",
     "inspect-random": "node scripts/inspect-random-programs.js",
     "bake-prelude": "node scripts/bake-prelude.mjs",
-    "minify": "terser dist/index.js --config-file terser.config.json --output dist/index.min.js"
+    "minify": "node scripts/minify-dist.mjs"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
@@ -157,7 +157,11 @@
     "./package.json": "./package.json",
     "./min": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.min.js"
+      "import": "./dist-min/index.js"
+    },
+    "./min/*": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist-min/*.js"
     }
   }
 }
