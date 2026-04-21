@@ -1,0 +1,213 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "SonicWeave",
+  "scopeName": "source.sonicweave",
+  "fileTypes": [
+    "sw",
+    "sonicweave"
+  ],
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#templateArguments"
+    },
+    {
+      "include": "#colors"
+    },
+    {
+      "include": "#units"
+    },
+    {
+      "include": "#constants"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#operators"
+    },
+    {
+      "include": "#punctuation"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.block.sonicweave",
+          "begin": "\\(\\*",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.begin.sonicweave"
+            }
+          },
+          "end": "\\*\\)",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.end.sonicweave"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#comments"
+            }
+          ]
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.sonicweave",
+          "begin": "\"",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.sonicweave"
+            }
+          },
+          "end": "\"",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.sonicweave"
+            }
+          },
+          "patterns": [
+            {
+              "name": "constant.character.escape.sonicweave",
+              "match": "\\\\(?:['\"\\\\bnfrtv]|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|\\r\\n|[\\n\\r\\u2028\\u2029])"
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.sonicweave",
+          "begin": "'",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.sonicweave"
+            }
+          },
+          "end": "'",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.sonicweave"
+            }
+          },
+          "patterns": [
+            {
+              "name": "constant.character.escape.sonicweave",
+              "match": "\\\\(?:['\"\\\\bnfrtv]|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|\\r\\n|[\\n\\r\\u2028\\u2029])"
+            }
+          ]
+        }
+      ]
+    },
+    "templateArguments": {
+      "patterns": [
+        {
+          "name": "variable.parameter.template.sonicweave",
+          "match": "¥[0-9]+"
+        }
+      ]
+    },
+    "colors": {
+      "patterns": [
+        {
+          "name": "constant.other.color.sonicweave",
+          "match": "#[0-9A-Fa-f]{3}(?:[0-9A-Fa-f]{3})?\\b"
+        },
+        {
+          "name": "support.constant.color-function.sonicweave",
+          "match": "\\b(?:rgb|rgba|hsl|hsla)\\s*\\("
+        }
+      ]
+    },
+    "units": {
+      "patterns": [
+        {
+          "name": "storage.type.unit.sonicweave",
+          "match": "\\b(?:Hz|hz|deg|rc|ms)\\b|[¢°€¶]"
+        }
+      ]
+    },
+    "constants": {
+      "patterns": [
+        {
+          "name": "constant.language.sonicweave",
+          "match": "\\b(?:true|false|nan|niente|inf)\\b"
+        },
+        {
+          "name": "constant.language.scale-pop.sonicweave",
+          "match": "(?:££|£|pop\\$\\$|pop\\$)"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.sonicweave",
+          "match": "\\b(?:if|else|lest|for|while|break|continue|return|throw|try|catch|finally|defer|in|of|where|from|to|by|as)\\b"
+        },
+        {
+          "name": "keyword.declaration.sonicweave",
+          "match": "\\b(?:let|const|module|import|export|del|riff|fn|lift|tmpr|MOS|drop)\\b"
+        },
+        {
+          "name": "keyword.operator.word.sonicweave",
+          "match": "\\b(?:and|or|not|vand|vor|vnot|dot|mdot|vdot|mod|modc|rd|rdc|tns|ed|sof|abs|labs|min|max|al)\\b"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.rational.sonicweave",
+          "match": "\\b[0-9][0-9_]*\\/[1-9][0-9_]*\\b"
+        },
+        {
+          "name": "constant.numeric.decimal.sonicweave",
+          "match": "(?<!\\w)(?:[0-9][0-9_]*\\.[0-9_]*|\\.[0-9][0-9_]*|[0-9][0-9_]*,[0-9][0-9_]*)(?:[eE][+-]?[0-9]+)?[rez]?\\b"
+        },
+        {
+          "name": "constant.numeric.integer.sonicweave",
+          "match": "(?<!\\w)[0-9][0-9_]*(?:[eE][+-]?[0-9]+)?[rez]?\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.sonicweave",
+          "match": "\\.{2,3}|=>|==|!=|<=|>=|[+\\-*/%^~@=<>:?\\\\]"
+        }
+      ]
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "name": "punctuation.separator.comma.sonicweave",
+          "match": ","
+        },
+        {
+          "name": "punctuation.terminator.statement.sonicweave",
+          "match": ";"
+        },
+        {
+          "name": "punctuation.section.group.begin.sonicweave",
+          "match": "[({[⟨<]"
+        },
+        {
+          "name": "punctuation.section.group.end.sonicweave",
+          "match": "[)}\\]⟩>]"
+        }
+      ]
+    }
+  }
+}

@@ -43,6 +43,7 @@
     "compile-parsers": "npm run compile-sonic-weave-parser && npm run compile-chord-parser && npm run compile-sw2-parser && npm run compile-paren-counter",
     "precompile": "npm run compile-parsers",
     "compile": "tsc",
+    "postcompile": "node scripts/copy-shiki-grammar.mjs",
     "fix": "gts fix",
     "prepare": "npm run compile && npm run bake-prelude",
     "pretest": "npm run compile",
@@ -152,6 +153,7 @@
       "types": "./dist/stdlib/index.d.ts",
       "import": "./dist/stdlib/index.js"
     },
+    "./shiki": "./dist/shiki/sonic-weave.tmLanguage.json",
     "./package.json": "./package.json"
   }
 }
