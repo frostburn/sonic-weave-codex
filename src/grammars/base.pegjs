@@ -138,11 +138,21 @@ IdentifierPart
   / '\u200C'
   / '\u200D'
 
+SpacingStart
+  = [\t\v\f \u00A0\uFEFF\n\r\u2028\u2029]
+  / &'(*'
+  / ![\u0000-\u007F] &{ return ZS_RE.test(input.charAt(offset())); }
+
+InlineSpacingStart
+  = [\t\v\f \u00A0\uFEFF]
+  / &'(*'
+  / ![\u0000-\u007F] &{ return ZS_RE.test(input.charAt(offset())); }
+
 _ 'whitespace'
-  = (WhiteSpace / LineTerminatorSequence / Comment)*
+  = (&SpacingStart (WhiteSpace / LineTerminatorSequence / Comment))*
 
 __ 'inline whitespace'
-  = (WhiteSpace / CommentNoLineTerminator)*
+  = (&InlineSpacingStart (WhiteSpace / CommentNoLineTerminator))*
 
 NonEmptyInlineWhiteSpace = (WhiteSpace / CommentNoLineTerminator) {
   return ' ';
