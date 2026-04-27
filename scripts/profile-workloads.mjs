@@ -91,10 +91,9 @@ async function profileCpu(name, fn) {
 async function runWorkload({name, iterations, fn}) {
   const beforeHeap = process.memoryUsage().heapUsed;
   const start = performance.now();
-  let lastResult;
 
   for (let i = 0; i < iterations; ++i) {
-    lastResult = fn();
+    fn();
   }
 
   const totalMs = performance.now() - start;
@@ -112,7 +111,6 @@ async function runWorkload({name, iterations, fn}) {
     avgMs: totalMs / iterations,
     heapDelta: afterHeap - beforeHeap,
     cpuProfile,
-    lastResult,
   };
 }
 
