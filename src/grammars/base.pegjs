@@ -1,7 +1,12 @@
 {{
+  const ASCII_RE = /[\u0000-\u007F]/;
   const ZS_RE = /\p{Zs}/u;
   const ID_START_RE = /\p{ID_Start}/u;
   const ID_CONTINUE_RE = /\p{ID_Continue}/u;
+
+  function isNonAsciiSpaceSeparator(character) {
+    return !ASCII_RE.test(character) && ZS_RE.test(character);
+  }
 }}
 
 UnderscoreDigits
@@ -181,7 +186,7 @@ LineTerminatorSequence 'line terminator'
 
 // Separator, Space
 Zs
-  = c: SourceCharacter &{ return ZS_RE.test(c); }
+  = c: SourceCharacter &{ return isNonAsciiSpaceSeparator(c); }
 
 SourceCharacter 'any character'
   = SourceCharacterLow

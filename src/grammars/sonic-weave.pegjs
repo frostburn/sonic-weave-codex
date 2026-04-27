@@ -81,6 +81,7 @@
   const PERFECT_DEGREES = new Set([1, 4, 5, 1.5, 4.5, 7.5]);
   const MID_DEGREES = new Set([4, 5, 1.5, 7.5]);
   const IMPERFECT_DEGREES = new Set([2, 3, 6, 7, 2.5, 3.5, 5.5, 6.5]);
+  const BRACKETED_SPARSE_OFFSET_HEAD_RE = /^\[[^\]\r\n]+\](?:0|[1-9][0-9]*)(?:\[[^\]\r\n]*\])?@/;
 
   function UpdateExpression(operator, argument) {
     return {
@@ -277,14 +278,14 @@ ReassignmentTail
   }
 
 VariableManipulationStatement
-  = &SourceCharacter name: IdentifierArray _ '=' _ value: Expression EOS {
+  = &'[' name: IdentifierArray _ '=' _ value: Expression EOS {
     return {
       type: 'AssignmentStatement',
       name,
       value,
     };
   }
-  / &SourceCharacter name: AccessExpression tail: ReassignmentTail? EOS {
+  / !EOF name: AccessExpression tail: ReassignmentTail? EOS {
     if (!tail) {
       return {
         type: 'ExpressionStatement',
@@ -1337,7 +1338,16 @@ PatentTweak
 PatentTweaks = PatentTweak|.., _ ',' _|
 
 SparseOffsetVal
-  = equave: ('[' @Fraction ']')? divisions: BasicInteger tweaks: ('[' _ @PatentTweaks _ ']')? '@' basis: (Identifier / WartBasis) {
+  = &'[' &{ return BRACKETED_SPARSE_OFFSET_HEAD_RE.test(input.slice(offset())); } equave: ('[' @Fraction ']')? divisions: BasicInteger tweaks: ('[' _ @PatentTweaks _ ']')? '@' basis: (Identifier / WartBasis) {
+    return {
+      type: 'SparseOffsetVal',
+      equave: equave ?? '',
+      divisions,
+      tweaks: tweaks ?? [],
+      basis,
+    }
+  }
+  / !'[' equave: ('[' @Fraction ']')? divisions: BasicInteger tweaks: ('[' _ @PatentTweaks _ ']')? '@' basis: (Identifier / WartBasis) {
     return {
       type: 'SparseOffsetVal',
       equave: equave ?? '',
