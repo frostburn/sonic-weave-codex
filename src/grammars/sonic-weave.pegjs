@@ -203,16 +203,19 @@ LiftToken          = @'lift'     !IdentifierPart
 MaxToken           = @'max'      !IdentifierPart
 MatrixDotToken     = @'mdot'     !IdentifierPart
 MinToken           = @'min'      !IdentifierPart
-ModToken           = @'mod'      !IdentifierPart
-ModCeilingToken    = @'modc'     !IdentifierPart
+ModFamilyToken     = 'mod' 'c'? !IdentifierPart { return text(); }
+ModToken           = &'mod' !'modc' token:ModFamilyToken { return token; }
+ModCeilingToken    = &'modc' token:ModFamilyToken { return token; }
 ModuleToken        = @'module'   !IdentifierPart
-NotANumberToken    = @'nan'      !IdentifierPart
-NoneToken          = @'niente'   !IdentifierPart
-NotToken           = @'not'      !IdentifierPart
+NotFamilyToken     = 'n' ('an' / 'iente' / 'ot') !IdentifierPart { return text(); }
+NotANumberToken    = &'nan' token:NotFamilyToken { return token; }
+NoneToken          = &'niente' token:NotFamilyToken { return token; }
+NotToken           = &'not' token:NotFamilyToken { return token; }
 OfToken            = @'of'       !IdentifierPart
 OrToken            = @'or'       !IdentifierPart
-PopScaleToken      = @'pop$'     !IdentifierPart
-PopParentToken     = @'pop$$'    !IdentifierPart
+PopFamilyToken     = 'pop$' '$'? !IdentifierPart { return text(); }
+PopScaleToken      = &'pop$' !'pop$$' token:PopFamilyToken { return token; }
+PopParentToken     = &'pop$$' token:PopFamilyToken { return token; }
 ReduceToken        = @'rd'       !IdentifierPart
 ReduceCeilingToken = @'rdc'      !IdentifierPart
 ReturnToken        = @'return'   !IdentifierPart
@@ -780,14 +783,19 @@ RelationalOperator 'relational operator'
   / '>='
   / '<'
   / '>'
-  / OfToken
-  / (NotToken __ OfToken) { return 'not of'; }
+  / RelationalMembershipOperator
+  / RelationalNotMembershipOperator
+
+RelationalMembershipOperator
+  = OfToken
   / $('~' OfToken)
-  / (NotToken __ '~' OfToken) { return 'not ~of'; }
   / InToken
-  / (NotToken __ InToken) { return 'not in'; }
   / $('~' InToken)
-  / (NotToken __ '~' InToken) { return 'not ~in'; }
+
+RelationalNotMembershipOperator
+  = NotToken __ operator: RelationalMembershipOperator {
+    return `not ${operator}`;
+  }
 
 RelationTail
   = __ leftOperator: ('<=' / '<') __ middle: RoundingExpression __ rightOperator: ('<=' / '<') _ right: RoundingExpression {
