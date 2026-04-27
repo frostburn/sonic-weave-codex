@@ -1337,7 +1337,16 @@ PatentTweak
 PatentTweaks = PatentTweak|.., _ ',' _|
 
 SparseOffsetVal
-  = equave: ('[' @Fraction ']')? divisions: BasicInteger tweaks: ('[' _ @PatentTweaks _ ']')? '@' basis: (Identifier / WartBasis) {
+  = &'[' &(('[' Fraction ']')? BasicInteger ('[' _ PatentTweaks _ ']')? '@') equave: ('[' @Fraction ']')? divisions: BasicInteger tweaks: ('[' _ @PatentTweaks _ ']')? '@' basis: (Identifier / WartBasis) {
+    return {
+      type: 'SparseOffsetVal',
+      equave: equave ?? '',
+      divisions,
+      tweaks: tweaks ?? [],
+      basis,
+    }
+  }
+  / !'[' equave: ('[' @Fraction ']')? divisions: BasicInteger tweaks: ('[' _ @PatentTweaks _ ']')? '@' basis: (Identifier / WartBasis) {
     return {
       type: 'SparseOffsetVal',
       equave: equave ?? '',
