@@ -203,16 +203,19 @@ LiftToken          = @'lift'     !IdentifierPart
 MaxToken           = @'max'      !IdentifierPart
 MatrixDotToken     = @'mdot'     !IdentifierPart
 MinToken           = @'min'      !IdentifierPart
-ModToken           = @'mod'      !IdentifierPart
-ModCeilingToken    = @'modc'     !IdentifierPart
+ModFamilyToken     = @'mod' 'c'? !IdentifierPart
+ModToken           = &'mod' !'modc' @ModFamilyToken
+ModCeilingToken    = &'modc' @ModFamilyToken
 ModuleToken        = @'module'   !IdentifierPart
-NotANumberToken    = @'nan'      !IdentifierPart
-NoneToken          = @'niente'   !IdentifierPart
-NotToken           = @'not'      !IdentifierPart
+NotFamilyToken     = @'n' ('an' / 'iente' / 'ot') !IdentifierPart
+NotANumberToken    = &'nan' @NotFamilyToken
+NoneToken          = &'niente' @NotFamilyToken
+NotToken           = &'not' @NotFamilyToken
 OfToken            = @'of'       !IdentifierPart
 OrToken            = @'or'       !IdentifierPart
-PopScaleToken      = @'pop$'     !IdentifierPart
-PopParentToken     = @'pop$$'    !IdentifierPart
+PopFamilyToken     = @'pop$' '$'? !IdentifierPart
+PopScaleToken      = &'pop$' !'pop$$' @PopFamilyToken
+PopParentToken     = &'pop$$' @PopFamilyToken
 ReduceToken        = @'rd'       !IdentifierPart
 ReduceCeilingToken = @'rdc'      !IdentifierPart
 ReturnToken        = @'return'   !IdentifierPart
@@ -780,14 +783,19 @@ RelationalOperator 'relational operator'
   / '>='
   / '<'
   / '>'
-  / OfToken
-  / (NotToken __ OfToken) { return 'not of'; }
+  / RelationalMembershipOperator
+  / RelationalNotMembershipOperator
+
+RelationalMembershipOperator
+  = OfToken
   / $('~' OfToken)
-  / (NotToken __ '~' OfToken) { return 'not ~of'; }
   / InToken
-  / (NotToken __ InToken) { return 'not in'; }
   / $('~' InToken)
-  / (NotToken __ '~' InToken) { return 'not ~in'; }
+
+RelationalNotMembershipOperator
+  = NotToken __ operator: RelationalMembershipOperator {
+    return `not ${operator}`;
+  }
 
 RelationTail
   = __ leftOperator: ('<=' / '<') __ middle: RoundingExpression __ rightOperator: ('<=' / '<') _ right: RoundingExpression {
