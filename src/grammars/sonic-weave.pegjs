@@ -277,14 +277,14 @@ ReassignmentTail
   }
 
 VariableManipulationStatement
-  = &SourceCharacter name: IdentifierArray _ '=' _ value: Expression EOS {
+  = &'[' name: IdentifierArray _ '=' _ value: Expression EOS {
     return {
       type: 'AssignmentStatement',
       name,
       value,
     };
   }
-  / &SourceCharacter name: AccessExpression tail: ReassignmentTail? EOS {
+  / !EOF name: AccessExpression tail: ReassignmentTail? EOS {
     if (!tail) {
       return {
         type: 'ExpressionStatement',

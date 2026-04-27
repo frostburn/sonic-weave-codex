@@ -181,7 +181,7 @@ LineTerminatorSequence 'line terminator'
 
 // Separator, Space
 Zs
-  = c: SourceCharacter &{ return ZS_RE.test(c); }
+  = ![\u0000-\u007F] c: SourceCharacter &{ return ZS_RE.test(c); }
 
 SourceCharacter 'any character'
   = SourceCharacterLow
