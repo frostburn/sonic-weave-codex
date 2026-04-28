@@ -78,6 +78,10 @@ describe('SonicWeave Abstract Syntax Tree parser', () => {
     }
   });
 
+  it('rejects reserved keywords as identifiers in declarations', () => {
+    expect(() => parseSingle('const mod = 4')).toThrow('mod is a reserved keyword');
+  });
+
   it('parses kilohertz', () => {
     const ast = parseSingle('1 kHz');
     expect(ast).toEqual({

@@ -321,14 +321,14 @@ VariableManipulationStatement
   }
 
 VariableDeclaration
-  = LetToken _ parameters: NonEmptyParameters EOS {
+  = LetToken _ parameters: DeclarationParameters EOS {
     return {
       type: 'VariableDeclaration',
       parameters,
       mutable: true,
     };
   }
-  / ConstToken _ parameters: ParametersWithDefaults EOS {
+  / ConstToken _ parameters: DeclarationParametersWithDefaults EOS {
     return {
       type: 'VariableDeclaration',
       parameters,
@@ -462,6 +462,67 @@ ParameterArrayWithDefault
     };
   }
 
+DeclarationParameter
+  = identifier: (Identifier / InvalidIdentifier) defaultValue: (_ '=' _ @Expression)? {
+    return {
+      ...identifier,
+      type: 'Parameter',
+      defaultValue,
+    };
+  }
+
+DeclarationParameters
+  = parameters: (DeclarationParameter / DeclarationParameterArray)|1.., _ ',' _| rest: (_ ','? _ '...' _ @DeclarationParameter)? {
+    return {
+      type: 'Parameters',
+      parameters,
+      rest,
+      defaultValue: null,
+    };
+  }
+  / '...' _ rest: DeclarationParameter {
+    return {
+      type: 'Parameters',
+      parameters: [],
+      rest,
+      defaultValue: null,
+    }
+  }
+
+DeclarationParameterArray
+  = '[' _ parameters: DeclarationParameters _ ']' defaultValue: (_ '=' _ @Expression)? {
+    return {
+      ...parameters,
+      defaultValue,
+    };
+  }
+
+DeclarationParameterWithDefault
+  = identifier: (Identifier / InvalidIdentifier) _ '=' _ defaultValue: Expression {
+    return {
+      ...identifier,
+      type: 'Parameter',
+      defaultValue,
+    };
+  }
+
+DeclarationParametersWithDefaults
+  = parameters: (DeclarationParameterWithDefault / DeclarationParameterArrayWithDefault)|1.., _ ',' _| {
+    return {
+      type: 'Parameters',
+      parameters,
+      defaultValue: null,
+    };
+  }
+
+DeclarationParameterArrayWithDefault
+  = '[' _ parameters: DeclarationParameters _ ']' _ '=' _ defaultValue: Expression {
+    return {
+      ...parameters,
+      defaultValue,
+    };
+  }
+
 Identifiers
   = identifiers: (Identifier / IdentifierArray)|.., _ ',' _| rest: (_ ','? _ '...' _ @Identifier)? {
     return {
@@ -549,7 +610,7 @@ IfStatement
 IterationKind = OfToken / InToken
 
 IterationStatement
-  = ForToken _ '(' _ LetToken _ element: (Parameter / ParameterArray) _ kind: IterationKind _ container: Expression _ ')' _ body: Statement tail: (_ ElseToken _ @Statement)? {
+  = ForToken _ '(' _ LetToken _ element: (DeclarationParameter / DeclarationParameterArray) _ kind: IterationKind _ container: Expression _ ')' _ body: Statement tail: (_ ElseToken _ @Statement)? {
     return {
       type: 'IterationStatement',
       element,
@@ -560,7 +621,7 @@ IterationStatement
       mutable: true,
     };
   }
-  / ForToken _ '(' _ ConstToken _ element: (Parameter / ParameterArray) _ kind: IterationKind _ container: Expression _ ')' _ body: Statement tail: (_ ElseToken _ @Statement)? {
+  / ForToken _ '(' _ ConstToken _ element: (DeclarationParameter / DeclarationParameterArray) _ kind: IterationKind _ container: Expression _ ')' _ body: Statement tail: (_ ElseToken _ @Statement)? {
     return {
       type: 'IterationStatement',
       element,
@@ -631,7 +692,7 @@ ModuleDeclaration
   }
 
 ExportConstantStatement
-  = ExportToken _ ConstToken _ parameter: ParameterWithDefault EOS {
+  = ExportToken _ ConstToken _ parameter: DeclarationParameterWithDefault EOS {
     return {
       type: 'ExportConstantStatement',
       parameter,
@@ -1150,7 +1211,7 @@ StepRange
 Range = StepRange / UnitStepRange
 
 Comprehension
-  = _ ForToken _ element: (Parameter / ParameterArray) _ kind: IterationKind _ container: Expression {
+  = _ ForToken _ element: (DeclarationParameter / DeclarationParameterArray) _ kind: IterationKind _ container: Expression {
     return {
       element,
       kind,
