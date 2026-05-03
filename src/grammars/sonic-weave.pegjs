@@ -386,7 +386,7 @@ DeleteStatement
   }
 
 Parameter
-  = identifier: Identifier defaultValue: (_ '=' _ @Expression)? {
+  = identifier: (Identifier / InvalidIdentifier) defaultValue: (_ '=' _ @Expression)? {
     return {
       ...identifier,
       type: 'Parameter',
@@ -431,7 +431,7 @@ ParameterArray
   }
 
 ParameterWithDefault
-  = identifier: Identifier _ '=' _ defaultValue: Expression {
+  = identifier: (Identifier / InvalidIdentifier) _ '=' _ defaultValue: Expression {
     return {
       ...identifier,
       type: 'Parameter',
@@ -1664,7 +1664,7 @@ SquareSuperparticular
   }
 
 ArrowFunction
-  = '(' _ parameters: Parameters _ ')' _ '=>' _ expression: Expression {
+  = &ArrowFunctionHead '(' _ parameters: Parameters _ ')' _ '=>' _ expression: Expression {
     return {
       type: 'ArrowFunction',
       parameters,
@@ -1672,12 +1672,61 @@ ArrowFunction
       text: text(),
     };
   }
-  / parameters: NonEmptyParameters _ '=>' _ expression: Expression {
+  / &ArrowFunctionHead parameters: NonEmptyParameters _ '=>' _ expression: Expression {
     return {
       type: 'ArrowFunction',
       parameters,
       expression,
       text: text(),
+    };
+  }
+
+ArrowFunctionHead
+  = '(' _ SoftParameters _ ')' _ '=>'
+  / SoftNonEmptyParameters _ '=>'
+
+SoftParameter
+  = identifier: Identifier defaultValue: (_ '=' _ @Expression)? {
+    return {
+      ...identifier,
+      type: 'Parameter',
+      defaultValue,
+    };
+  }
+
+SoftParameters
+  = parameters: (SoftParameter / SoftParameterArray)|.., _ ',' _| rest: (_ ','? _ '...' _ @SoftParameter)? {
+    return {
+      type: 'Parameters',
+      parameters,
+      rest,
+      defaultValue: null,
+    };
+  }
+
+SoftNonEmptyParameters
+  = parameters: (SoftParameter / SoftParameterArray)|1.., _ ',' _| rest: (_ ','? _ '...' _ @SoftParameter)? {
+    return {
+      type: 'Parameters',
+      parameters,
+      rest,
+      defaultValue: null,
+    };
+  }
+  / '...' _ rest: SoftParameter {
+    return {
+      type: 'Parameters',
+      parameters: [],
+      rest,
+      defaultValue: null,
+    }
+  }
+
+SoftParameterArray
+  = '[' _ parameters: SoftParameters _ ']' defaultValue: (_ '=' _ @Expression)? {
+    return {
+      ...parameters,
+      defaultValue,
     };
   }
 
