@@ -68,6 +68,18 @@ Run the test suite:
 npm test
 ```
 
+Run focused profiling workloads (parser + evaluator hotspots):
+
+```sh
+npm run profile
+```
+
+Generate CPU profiles you can inspect in Chrome DevTools:
+
+```sh
+npm run profile:cpu
+```
+
 Start the CLI REPL:
 
 ```sh
